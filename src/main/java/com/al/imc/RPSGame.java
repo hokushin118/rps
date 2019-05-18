@@ -7,6 +7,8 @@ import java.util.Scanner;
 import java.util.concurrent.ThreadLocalRandom;
 import java.util.function.Supplier;
 
+import org.apache.log4j.Logger;
+
 import com.al.imc.enums.Hand;
 import com.al.imc.model.ComputerPlayer;
 import com.al.imc.model.HumanPlayer;
@@ -14,14 +16,17 @@ import com.al.imc.model.Player;
 import com.al.imc.utils.Constants;
 import com.al.imc.utils.RPSHelper;
 
-public class RPSGame {
+public class RPSGame {	
+	private static final Logger logger = Logger.getLogger(RPSGame.class);
 
 	public static void main(String[] args) throws IOException {
 		System.out.println(Constants.NO_OF_GAMES);
 		
 		final BufferedReader br = new BufferedReader(new InputStreamReader(System.in));
 		String numberOfGames = br.readLine();		
-        int numberOfPlays = RPSHelper.getNumberOfPlays(numberOfGames);        
+        int numberOfPlays = RPSHelper.getNumberOfPlays(numberOfGames);  
+        
+        logger.info("Number of games: " + numberOfPlays);
                    
         for (int i = 0; i < numberOfPlays; i++) {        	
         	System.out.println();

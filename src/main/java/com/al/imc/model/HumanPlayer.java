@@ -2,6 +2,9 @@ package com.al.imc.model;
 
 import java.util.Scanner;
 
+import org.apache.log4j.Logger;
+
+import com.al.imc.RPSGame;
 import com.al.imc.enums.Hand;
 import com.al.imc.exceptions.RPSException;
 import com.al.imc.utils.Constants;
@@ -11,6 +14,8 @@ ComputerPlayer class represents human player.
 
 */
 public class HumanPlayer implements Player {
+	private static final Logger logger = Logger.getLogger(RPSGame.class);
+	
 	private final Scanner scanner;
 
 	public HumanPlayer(final Scanner scanner) {
@@ -33,6 +38,7 @@ public class HumanPlayer implements Player {
 			System.out.println("You've selected: SCISSORS");
 			return Hand.SCISSORS;
 		default:
+			logger.error("Invalid input.");
 			throw new RPSException("Invalid input.");
 		}
 	}
