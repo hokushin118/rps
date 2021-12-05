@@ -1,0 +1,105 @@
+# Use the latest 2.1 version of CircleCI pipeline process engine.
+# See: https://circleci.com/docs/2.0/configuration-reference
+version: 2.1
+
+commands:
+  restore_cache_cmd:
+    steps:
+      - restore_cache:
+          keys:
+            - v1-dependencies-{{ checksum "pom.xml" }}
+            - v1-dependencies-
+  save_cache_cmd:
+    steps:
+      - save_cache:
+          paths:
+            - ~/.m2
+          key: v1-dependencies-{{ checksum "pom.xml" }}
+  test:
+    steps:
+      - checkout # check out source code to working directory
+      - restore_cache_cmd
+      - run:
+          name: JUnit testing
+          command: |
+            sudo chmod +x ./mvnw
+            ./mvnw test
+      - store_artifacts:
+          path: target
+      - save_cache_cmd
+  build:
+    steps:
+      - checkout
+      - restore_cache_cmd
+      - run:
+          name: Package application
+          command: |
+            sudo chmod +x ./mvnw
+            ./mvnw -Dmaven.test.skip=true package
+      - save_cache_cmd
+
+executors:
+  docker-executor:
+    docker:
+      - image: circleci/openjdk:11.0.3-jdk-stretch # with this image as the primary container; this is where all `steps` will run
+  machine-executor:
+    machine:
+      image: ubuntu-1604:201903-01
+
+# Define a job to be invoked later in a workflow.
+# See: https://circleci.com/docs/2.0/configuration-reference/#jobs
+jobs:
+  # Specify the execution environment. You can specify an image from Dockerhub or use one of our Convenience Images from CircleCI's Developer Hub.
+  # See: https://circleci.com/docs/2.0/configuration-reference/#docker-machine-macos-windows-executor
+  test-with-docker:
+    executor: docker-executor
+    # Add steps to the job
+    # See: https://circleci.com/docs/2.0/configuration-reference/#steps
+    steps:
+      - test
+
+  build-with-docker:
+    executor: docker-executor
+    steps:
+      - build
+
+  test-with-machine:
+    executor: machine-executor
+    steps:
+      - run:
+          name: Install OpenJDK 11
+          command: |
+            sudo apt-get update && sudo apt-get install openjdk-11-jdk
+            sudo update-alternatives --set java /usr/lib/jvm/java-11-openjdk-amd64/bin/java
+            sudo update-alternatives --set javac /usr/lib/jvm/java-11-openjdk-amd64/bin/javac
+            java -version
+      - test
+
+  build-with-machine:
+    executor: machine-executor
+    steps:
+      - run:
+          name: Install OpenJDK 11
+          command: |
+            sudo apt-get update && sudo apt-get install openjdk-11-jdk
+            sudo update-alternatives --set java /usr/lib/jvm/java-11-openjdk-amd64/bin/java
+            sudo update-alternatives --set javac /usr/lib/jvm/java-11-openjdk-amd64/bin/javac
+            java -version
+      - build
+
+# Invoke jobs via workflows
+# See: https://circleci.com/docs/2.0/configuration-reference/#workflows
+workflows:
+  build-then-test-with-docker:
+    jobs:
+      - build-with-docker
+      - test-with-docker:
+          requires:
+            - build-with-docker
+
+  build-then-test-with-machine:
+    jobs:
+      - build-with-machine
+      - test-with-machine:
+          requires:
+            - build-with-machine
