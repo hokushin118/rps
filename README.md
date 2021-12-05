@@ -18,4 +18,3 @@
 ```
      > java -jar target/rps-app.jar
 ```
-e.g.
