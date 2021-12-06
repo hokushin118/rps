@@ -14,7 +14,7 @@ import static com.al.wa.enums.Hand.EMPTY;
  * This class implements Rock Paper Scissor game functionality.
  */
 public class GameServiceImpl implements GameService {
-    static final String WELCOME_MESSAGE = "Welcome to the Rock Paper Scissors game!\n";
+    static final String WELCOME_MESSAGE = "Welcome to the Rock Paper Scissors game!";
     static final String HAND_FIGURE = "Please select 1, 2, or 3 for ROCK, PAPER or SCISSORS.";
 
     private final MarkovChain markovChain;
