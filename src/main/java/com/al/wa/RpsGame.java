@@ -24,6 +24,7 @@ public class RpsGame {
         String userWantsToExit;
 
         System.out.print(this.gameService.welcomeMessage());
+        System.out.println();
 
         do {
             System.out.println(this.gameService.enterOptionsMessage());
@@ -35,7 +36,7 @@ public class RpsGame {
             final var winner = this.gameService.calculateResult();
             final var score = this.gameService.getResults();
 
-            System.out.printf("You played %s and the machine played %s \n",
+            System.out.printf("You played %s and the machine played %s %n",
                     userChoice.name(),
                     machineChoice.name());
 
@@ -49,7 +50,7 @@ public class RpsGame {
                 System.out.println("Draw!");
             }
 
-            System.out.printf("You won %d games out of %d \n",
+            System.out.printf("You won %d games out of %d %n",
                     score.getGamesWonByUser(), score.getTotalGames());
 
             // Update the Markov Chain with the last game human player choice
