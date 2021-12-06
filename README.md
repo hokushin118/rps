@@ -21,18 +21,17 @@
 ### Creating and uploading Docker image to a Docker Hub repository
 #### Rock Paper Scissors app is very easy to install and deploy in a Docker container.
 * Create a Docker Hub account if you don't have one.
-* Change the lines below in you pom.xml file 
-- under the < properties > node:
+* Change the lines below in you pom.xml file under the < properties > node:
 ```
      <docker-hub-user-id>your-docker-hub-user-name</docker-hub-user-id>
 ```
-- under the < to > node of the jib-maven-plugin:
----
-         <auth>
-              ...
-              <password>your-docker-password</password>
-         </auth>
----
+* Change the lines below in you pom.xml file under the < to > node of the jib-maven-plugin:
+```
+     <auth>
+           ...
+           <password>your-docker-password</password>
+     </auth>
+```
 * Run the Rock Paper Scissors application under docker profile "mvn clean install -Pdocker" to create and upload RPS game Docker image to a Docker Hub repository.
 ```
     > mvn clean install -Pdocker
