@@ -19,13 +19,21 @@ commands:
     steps:
       - checkout # check out source code to working directory
       - restore_cache_cmd
-      - run: ./mvnw test
+      - run:
+          name: JUnit testing
+          command: |
+            sudo chmod +x ./mvnw
+            ./mvnw test
       - save_cache_cmd
   build:
     steps:
       - checkout
       - restore_cache_cmd
-      - run: ./mvnw -Dmaven.test.skip=true package
+      - run:
+          name: Package application
+          command: |
+            sudo chmod +x ./mvnw
+            ./mvnw -Dmaven.test.skip=true package
       - save_cache_cmd
 
 executors:
