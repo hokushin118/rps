@@ -278,10 +278,6 @@
                                         ${maven-compiler-plugin.version}
                                     </message>
                                 </requireMavenVersion>
-                                <requireJavaVersion>
-                                    <version>[${java.version},)</version>
-                                    <message>Invalid Java version. It should, at least, be ${java.version}</message>
-                                </requireJavaVersion>
                             </rules>
                         </configuration>
                     </execution>
