@@ -2,16 +2,28 @@ package com.al.wa.enums;
 
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
+import org.junit.jupiter.params.ParameterizedTest;
+import org.junit.jupiter.params.provider.EnumSource;
 
 import static com.al.wa.enums.Hand.EMPTY;
 import static com.al.wa.enums.Hand.PAPER;
 import static com.al.wa.enums.Hand.ROCK;
 import static com.al.wa.enums.Hand.SCISSORS;
-import static org.junit.jupiter.api.Assertions.*;
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertFalse;
+import static org.junit.jupiter.api.Assertions.assertSame;
+import static org.junit.jupiter.api.Assertions.assertTrue;
 
 @DisplayName("Testing Hand enum")
 class HandTest {
-    private static final int TOTAL_ITEMS = 4;
+    private static final int TOTAL_ITEMS = 4; // total number of items defined in enum
+
+    @ParameterizedTest
+    @EnumSource(Hand.class)
+    @DisplayName("Testing valueOfInt() method")
+    void valueOfCodeTest(Hand hand) {
+        assertSame(hand, Hand.valueOfInt(hand.getId()));
+    }
 
     @Test
     @DisplayName("Testing valueOf() method")
@@ -28,10 +40,24 @@ class HandTest {
         assertTrue(ROCK.isWinBy(PAPER));
         assertTrue(PAPER.isWinBy(SCISSORS));
         assertTrue(SCISSORS.isWinBy(ROCK));
+        assertTrue(EMPTY.isWinBy(EMPTY));
 
         assertFalse(ROCK.isWinBy(SCISSORS));
         assertFalse(SCISSORS.isWinBy(PAPER));
         assertFalse(PAPER.isWinBy(ROCK));
+
+        assertFalse(EMPTY.isWinBy(ROCK));
+        assertFalse(EMPTY.isWinBy(PAPER));
+        assertFalse(EMPTY.isWinBy(SCISSORS));
+    }
+
+    @Test
+    @DisplayName("Testing getWinBy() method")
+    void getWinByTest() {
+        assertEquals(-1, EMPTY.getWinBy());
+        assertEquals(1, SCISSORS.getWinBy());
+        assertEquals(2, ROCK.getWinBy());
+        assertEquals(3, PAPER.getWinBy());
     }
 
     @Test

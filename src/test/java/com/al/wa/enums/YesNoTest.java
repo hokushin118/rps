@@ -2,8 +2,8 @@ package com.al.wa.enums;
 
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
-
-import java.util.stream.Stream;
+import org.junit.jupiter.params.ParameterizedTest;
+import org.junit.jupiter.params.provider.EnumSource;
 
 import static com.al.wa.enums.YesNo.NO;
 import static com.al.wa.enums.YesNo.YES;
@@ -12,12 +12,13 @@ import static org.junit.jupiter.api.Assertions.assertSame;
 
 @DisplayName("Testing YesNo enum")
 class YesNoTest {
-    private static final int TOTAL_ITEMS = 2;
+    private static final int TOTAL_ITEMS = 2; // total number of items defined in enum
 
-    @Test
+    @ParameterizedTest
+    @EnumSource(YesNo.class)
     @DisplayName("Testing valueOfCode() method")
-    void valueOfCodeTest() {
-        Stream.of(YesNo.values()).forEach(item -> assertSame(item, YesNo.valueOfCode(item.getCode())));
+    void valueOfCodeTest(YesNo input) {
+        assertSame(input, YesNo.valueOfCode(input.getCode()));
     }
 
     @Test

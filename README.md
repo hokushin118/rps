@@ -1,10 +1,11 @@
-[![CircleCI](https://circleci.com/gh/hokushin118/rps/tree/main.svg?style=svg)](https://circleci.com/gh/hokushin118/rps/tree/main)
 # Rock Paper Scissors game with Markov Chain for AI
-
+[![CircleCI](https://circleci.com/gh/hokushin118/rps/tree/main.svg?style=svg)](https://circleci.com/gh/hokushin118/rps/tree/main)
+[![codecov](https://codecov.io/gh/hokushin118/rps/branch/main/graph/badge.svg?token=8FSYV51XAF)](https://codecov.io/gh/hokushin118/rps)
+[![Quality Gate Status](https://sonarcloud.io/api/project_badges/measure?project=hokushin118_rps&metric=alert_status)](https://sonarcloud.io/summary/new_code?id=hokushin118_rps)
+[![Codacy Badge](https://api.codacy.com/project/badge/Grade/ae18bc7d448c4b9ab13811b1b08f6c13)](https://app.codacy.com/gh/hokushin118/rps?utm_source=github.com&utm_medium=referral&utm_content=hokushin118/rps&utm_campaign=Badge_Grade_Settings)
 ### Prerequisites
 * Java 11 or higher.
 * Maven 3.6.0 or higher.
-
 ### Running the RPS Game From the Command Line
 * Clone this repository:
 ```
@@ -20,7 +21,7 @@
      > java -jar target/rps-app.jar
 ```
 ### Creating and uploading Docker image to a Docker Hub repository
-#### Rock Paper Scissors app is very easy to install and deploy in a Docker container.
+#### Rock Paper Scissors app is very easy to install and deploy in a Docker container
 * Create a Docker Hub account if you don't have one.
 * Change the lines below in you pom.xml file under the < properties > node:
 ```

@@ -15,7 +15,6 @@ import static org.mockito.Mockito.*;
 @ExtendWith(MockitoExtension.class)
 @DisplayName("Testing MarkovChain class")
 class MarkovChainInteractionsTest {
-
     @Mock
     private MarkovChain markovChain;
 

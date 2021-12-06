@@ -1,0 +1,13 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<settings xmlns="http://maven.apache.org/SETTINGS/1.0.0"
+          xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+          xsi:schemaLocation="http://maven.apache.org/SETTINGS/1.0.0 http://maven.apache.org/xsd/settings-1.0.0.xsd">
+    <servers>
+        <server>
+            <id>docker.io</id>
+            <username>hokushin</username>
+            <password>{r4FBArVsajUHPYa12iI3HJr5qcX525myxqy3Yibvs+tOIPAtVnPTCYxoNt/E4B+bYn3VYiJCUJqHn3BnIPFMcw==}</password>
+        </server>
+    </servers>
+</settings>

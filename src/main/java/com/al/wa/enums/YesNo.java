@@ -8,6 +8,9 @@ import java.util.HashMap;
 import java.util.Map;
 import java.util.stream.Stream;
 
+/**
+ * This enum contains continue/stop game options.
+ */
 @Getter
 @RequiredArgsConstructor(access = AccessLevel.PRIVATE)
 public enum YesNo {
