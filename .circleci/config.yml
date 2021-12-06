@@ -24,6 +24,8 @@ commands:
           command: |
             sudo chmod +x ./mvnw
             ./mvnw test
+      - store_artifacts:
+          path: target
       - save_cache_cmd
   build:
     steps:
