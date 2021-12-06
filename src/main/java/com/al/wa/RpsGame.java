@@ -2,6 +2,7 @@ package com.al.wa;
 
 import com.al.wa.enums.Hand;
 import com.al.wa.enums.Player;
+import com.al.wa.enums.YesNo;
 import com.al.wa.services.GameService;
 import com.al.wa.services.GameServiceImpl;
 
@@ -54,9 +55,10 @@ public class RpsGame {
             // Update the Markov Chain with the last game human player choice
             this.gameService.updateChain(userChoice);
 
-            System.out.println("Continue playing(Y=Yes, N=No)?");
+            System.out.printf("Continue playing (%s=Yes, %s=No)?",
+                    YesNo.YES.getCode(), YesNo.NO.getCode());
             userWantsToExit = scanner.next();
 
-        } while (userWantsToExit.equalsIgnoreCase("Y"));
+        } while (userWantsToExit.equalsIgnoreCase(YesNo.YES.getCode()));
     }
 }
