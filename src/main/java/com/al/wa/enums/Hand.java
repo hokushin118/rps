@@ -1,5 +1,7 @@
 package com.al.wa.enums;
 
+import java.util.stream.Stream;
+
 /**
  * This enum contains Rock Paper Scissor game options.
  */
@@ -18,12 +20,8 @@ public enum Hand {
     }
 
     public static Hand valueOfInt(int userEnteredOption) {
-        for (final var hand : Hand.values()) {
-            if (userEnteredOption == hand.id) {
-                return hand;
-            }
-        }
-        return EMPTY;
+        final var userEnteredHand = Stream.of(values()).filter(hand -> hand.id == userEnteredOption).findFirst();
+        return userEnteredHand.isPresent() ? userEnteredHand.get(): EMPTY;
     }
 
     public boolean isWinBy(Hand hand) {

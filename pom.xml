@@ -37,12 +37,15 @@
         <maven-project-info-reports-plugin.version>3.1.2</maven-project-info-reports-plugin.version>
         <jacoco-maven-plugin.version>0.8.7</jacoco-maven-plugin.version>
         <maven-enforcer-plugin.version>3.0.0-M3</maven-enforcer-plugin.version>
-        <jib-maven-plugin.version>2.5.0</jib-maven-plugin.version>
+        <jib-maven-plugin.version>3.1.1</jib-maven-plugin.version>
         <surefire.forkCount>2</surefire.forkCount>
         <surefire.reuseForks>true</surefire.reuseForks>
         <surefire.parallel.execution>methods</surefire.parallel.execution>
         <execjar.name>rps-app</execjar.name>
-        <image.path>registry.hub.docker.com/your-username/${execjar.name}</image.path>
+        <docker-hub-user-id>your-docker-hub-user-id</docker-hub-user-id>
+        <base.image.digest>@sha256:6c17f58746695a08b07b9bffd69bb6c46ff9380fdb974529135ad0d0167fd715</base.image.digest>
+        <base.image.path>openjdk:11-jdk-slim</base.image.path>
+        <image.path>${docker-hub-user-id}/${project.artifactId}</image.path>
     </properties>
 
     <profiles>
@@ -291,29 +294,47 @@
                 <artifactId>jib-maven-plugin</artifactId>
                 <version>${jib-maven-plugin.version}</version>
                 <configuration>
-                    <!-- Base image -->
+                    <!-- Base image (OpenJDK 11) with digest specification -->
                     <from>
-                        <image>openjdk:11-jdk-slim</image>
+                        <image>registry://${base.image.path}${base.image.digest}</image>
                     </from>
                     <to>
                         <!-- Path to your Docker registry repository -->
                         <image>${image.path}</image>
                         <!-- Tags of the image -->
                         <tags>
+                            <tag>${project.version}</tag>
                             <tag>latest</tag>
                         </tags>
+                        <!-- Docker Hub Registry credentials -->
+                        <auth>
+                            <username>${docker-hub-user-id}</username>
+                            <password>your-pwd</password>
+                        </auth>
                     </to>
                     <container>
                         <!-- Startup flags to be passed to the JVM -->
                         <jvmFlags>
                             <jvmFlag>-Xms512m</jvmFlag>
+                            <jvmFlag>-Xmx512m</jvmFlag>
+                            <jvmFlag>-Dfile.encoding=utf-8</jvmFlag>
                         </jvmFlags>
+                        <volumes>
+                            <volume>/tmp</volume>
+                        </volumes>
                         <!-- Main class of the application -->
                         <mainClass>com.al.wa.RpsGame</mainClass>
+                        <!-- Non-root user -->
+                        <user>nobody</user>
+                        <!-- Image labeling -->
+                        <labels>
+                            <mvn.build.version>${project.version}</mvn.build.version>
+                        </labels>
                     </container>
+                    <allowInsecureRegistries>true</allowInsecureRegistries>
                 </configuration>
                 <executions>
-                    <!-- Binding to build lifecycle -->
+                    <!-- Binding jib:build to build lifecycle -->
                     <execution>
                         <phase>package</phase>
                         <goals>
