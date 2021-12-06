@@ -1,4 +1,4 @@
-[![CircleCI](https://circleci.com/gh/hokushin118/rps.svg?style=shield)](https://circleci.com/gh/hokushin118/rps)
+[![CircleCI](https://circleci.com/gh/hokushin118/rps.svg?style=svg)](https://circleci.com/gh/hokushin118/rps)
 # Rock Paper Scissors game with Markov Chain for AI
 
 ### Prerequisites
