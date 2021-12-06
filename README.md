@@ -1,4 +1,5 @@
 [![CircleCI](https://circleci.com/gh/hokushin118/rps/tree/main.svg?style=svg)](https://circleci.com/gh/hokushin118/rps/tree/main)
+[![codecov](https://codecov.io/gh/codecov/example-java/branch/master/graph/badge.svg)](https://codecov.io/gh/codecov/example-java)
 # Rock Paper Scissors game with Markov Chain for AI
 
 ### Prerequisites
