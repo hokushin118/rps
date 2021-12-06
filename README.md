@@ -12,7 +12,6 @@
 [![Security Rating](https://sonarcloud.io/api/project_badges/measure?project=hokushin118_rps&metric=security_rating)](https://sonarcloud.io/summary/new_code?id=hokushin118_rps)
 [![Technical Debt](https://sonarcloud.io/api/project_badges/measure?project=hokushin118_rps&metric=sqale_index)](https://sonarcloud.io/summary/new_code?id=hokushin118_rps)
 [![Vulnerabilities](https://sonarcloud.io/api/project_badges/measure?project=hokushin118_rps&metric=vulnerabilities)](https://sonarcloud.io/summary/new_code?id=hokushin118_rps)
-[![Quality Gate Status](https://sonarcloud.io/api/project_badges/measure?project=hokushin118_rps&metric=alert_status)](https://sonarcloud.io/summary/new_code?id=hokushin118_rps)
 
 ### Prerequisites
 * Java 11 or higher.
