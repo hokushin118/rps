@@ -22,6 +22,7 @@ commands:
       - run:
           name: JUnit testing
           command: |
+            java --version
             sudo chmod +x ./mvnw
             ./mvnw test
       - save_cache_cmd
@@ -32,6 +33,7 @@ commands:
       - run:
           name: Package application
           command: |
+            java --version
             sudo chmod +x ./mvnw
             ./mvnw -Dmaven.test.skip=true package
       - save_cache_cmd
