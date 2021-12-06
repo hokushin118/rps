@@ -29,6 +29,9 @@ commands:
             ./mvnw test
       - store_artifacts:
           path: target
+      - codecov/upload:
+          file: './target/site/jacoco/jacoco.xml'
+          token: c504ea90-1c36-406b-90a3-44607a337f73
       - save_cache_cmd
   build:
     steps:
@@ -106,9 +109,3 @@ workflows:
       - test-with-machine:
           requires:
             - build-with-machine
-  upload-to-codecov:
-    jobs:
-      - checkout
-      - codecov/upload:
-          file: './target/site/jacoco/jacoco.xml'
-          token: c504ea90-1c36-406b-90a3-44607a337f73
