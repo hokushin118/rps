@@ -49,6 +49,7 @@
         <image.path>${docker-hub-user-id}/${project.artifactId}</image.path>
         <sonar.organization>hokushin118</sonar.organization>
         <sonar.host.url>https://sonarcloud.io</sonar.host.url>
+        <sonar.exclusions>com/al/wa/RpsGame.java</sonar.exclusions>
     </properties>
 
     <profiles>
