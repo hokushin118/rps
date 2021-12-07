@@ -13,16 +13,14 @@ public class MarkovChain {
     private static final int HAND_LENGTH = 3;
 
     // Markov Chain for the AI of machine player (stores probabilities)
-    private final float[][] markovChain;
+    private final float[][] chain;
     private final int[] timesPlayed;
 
     // Last move of human player
     private int lastMove;
-    // Second to last move of human player
-    private int penultimateMove;
 
     public MarkovChain() {
-        this.markovChain = new float[][]{
+        this.chain = new float[][]{
                 {0.33f, 0.33f, 0.33f},
                 {0.33f, 0.33f, 0.33f},
                 {0.33f, 0.33f, 0.33f}};
@@ -36,9 +34,9 @@ public class MarkovChain {
      * @return machine move
      */
     public Hand nextMove(float randomFloat) {
-        if (randomFloat <= this.markovChain[this.lastMove][1]) {
+        if (randomFloat <= this.chain[this.lastMove][1]) {
             return PAPER;
-        } else if (randomFloat <= this.markovChain[this.lastMove][2] + this.markovChain[this.lastMove][1]) {
+        } else if (randomFloat <= this.chain[this.lastMove][2] + this.chain[this.lastMove][1]) {
             return SCISSORS;
         }
         return ROCK;
@@ -50,7 +48,8 @@ public class MarkovChain {
      * @param userChoice human player input from last game
      */
     public void updateChain(Hand userChoice) {
-        this.penultimateMove = this.lastMove;
+        // Second to last move of human player
+        final var  penultimateMove = this.lastMove;
         if (userChoice == ROCK) {
             this.lastMove = 0;
         } else if (userChoice == PAPER) {
@@ -60,15 +59,15 @@ public class MarkovChain {
         }
         // Multiply everything in the appropriate column of the Markov Chain by timesPlayed[penultimateMove]
         for (var i = 0; i < HAND_LENGTH; i++) {
-            this.markovChain[this.penultimateMove][i] *= this.timesPlayed[this.penultimateMove];
+            this.chain[penultimateMove][i] *= this.timesPlayed[penultimateMove];
         }
         // Increment the appropriate row value by one
-        this.markovChain[this.penultimateMove][this.lastMove] += 1;
+        this.chain[penultimateMove][this.lastMove] += 1;
         // Increment timesPlayed[penultimateMove] by one
-        this.timesPlayed[this.penultimateMove]++;
+        this.timesPlayed[penultimateMove]++;
         // Divide all values in Markov Chain by timesPlayed[penultimateMove] value
         for (var j = 0; j < HAND_LENGTH; j++) {
-            this.markovChain[this.penultimateMove][j] /= this.timesPlayed[this.penultimateMove];
+            this.chain[penultimateMove][j] /= this.timesPlayed[penultimateMove];
         }
     }
 }

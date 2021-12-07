@@ -1,27 +1,34 @@
 package com.al.wa.enums;
 
+import lombok.AccessLevel;
+import lombok.RequiredArgsConstructor;
+
+import java.util.HashMap;
+import java.util.Map;
 import java.util.stream.Stream;
 
 /**
  * This enum contains Rock Paper Scissor game options.
  */
+@RequiredArgsConstructor(access = AccessLevel.PRIVATE)
 public enum Hand {
     ROCK(1, 2),
     PAPER(2, 3),
     SCISSORS(3, 1),
     EMPTY(-1, -1);
 
+    private static final Map<Integer, Hand> BY_ID = new HashMap<>();
+
     private final int id;
     private final int winBy;
 
-    Hand(int id, int winBy) {
-        this.id = id;
-        this.winBy = winBy;
+    static {
+        Stream.of(values()).forEach(item -> BY_ID.put(item.id, item));
     }
 
     public static Hand valueOfInt(int userEnteredOption) {
-        final var userEnteredHand = Stream.of(values()).filter(hand -> hand.id == userEnteredOption).findFirst();
-        return userEnteredHand.isPresent() ? userEnteredHand.get(): EMPTY;
+        final var hand = BY_ID.get(userEnteredOption);
+        return hand == null ? EMPTY : hand;
     }
 
     public boolean isWinBy(Hand hand) {
