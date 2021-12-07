@@ -69,6 +69,49 @@ class GameServiceImplTest {
 
         assertNotNull(player);
         assertInstanceOf(Player.class, player);
+        assertEquals(Player.DRAW, player);
+    }
+
+    @Test
+    @DisplayName("Testing calculateResult() method")
+    void calculateResultWinUserTest() {
+        Hand userChoice;
+        final var machineChoice = this.gameService.pickMachineChoice();
+        if (machineChoice == Hand.ROCK) {
+            userChoice = Hand.PAPER;
+        } else if (machineChoice == Hand.PAPER) {
+            userChoice = Hand.SCISSORS;
+        } else {
+            userChoice = Hand.ROCK;
+        }
+
+        this.gameService.pickUserChoice(userChoice);
+        final var player = this.gameService.calculateResult();
+
+        assertNotNull(player);
+        assertInstanceOf(Player.class, player);
+        assertEquals(Player.USER, player);
+    }
+
+    @Test
+    @DisplayName("Testing calculateResult() method")
+    void calculateResultWinMachineTest() {
+        Hand userChoice;
+        final var machineChoice = this.gameService.pickMachineChoice();
+        if (machineChoice == Hand.ROCK) {
+            userChoice = Hand.SCISSORS;
+        } else if (machineChoice == Hand.PAPER) {
+            userChoice = Hand.ROCK;
+        } else {
+            userChoice = Hand.PAPER;
+        }
+
+        this.gameService.pickUserChoice(userChoice);
+        final var player = this.gameService.calculateResult();
+
+        assertNotNull(player);
+        assertInstanceOf(Player.class, player);
+        assertEquals(Player.MACHINE, player);
     }
 
     @Test

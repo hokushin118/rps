@@ -40,10 +40,24 @@ class HandTest {
         assertTrue(ROCK.isWinBy(PAPER));
         assertTrue(PAPER.isWinBy(SCISSORS));
         assertTrue(SCISSORS.isWinBy(ROCK));
+        assertTrue(EMPTY.isWinBy(EMPTY));
 
         assertFalse(ROCK.isWinBy(SCISSORS));
         assertFalse(SCISSORS.isWinBy(PAPER));
         assertFalse(PAPER.isWinBy(ROCK));
+
+        assertFalse(EMPTY.isWinBy(ROCK));
+        assertFalse(EMPTY.isWinBy(PAPER));
+        assertFalse(EMPTY.isWinBy(SCISSORS));
+    }
+
+    @Test
+    @DisplayName("Testing getWinBy() method")
+    void getWinByTest() {
+        assertEquals(-1, EMPTY.getWinBy());
+        assertEquals(1, SCISSORS.getWinBy());
+        assertEquals(2, ROCK.getWinBy());
+        assertEquals(3, PAPER.getWinBy());
     }
 
     @Test
