@@ -13,7 +13,7 @@ import java.util.Scanner;
 public class RpsGame {
     private final GameService gameService;
 
-    private RpsGame() {
+    public RpsGame() {
         this.gameService = new GameServiceImpl();
     }
 
