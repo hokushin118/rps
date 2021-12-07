@@ -2,16 +2,28 @@ package com.al.wa.enums;
 
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
+import org.junit.jupiter.params.ParameterizedTest;
+import org.junit.jupiter.params.provider.EnumSource;
 
 import static com.al.wa.enums.Hand.EMPTY;
 import static com.al.wa.enums.Hand.PAPER;
 import static com.al.wa.enums.Hand.ROCK;
 import static com.al.wa.enums.Hand.SCISSORS;
-import static org.junit.jupiter.api.Assertions.*;
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertFalse;
+import static org.junit.jupiter.api.Assertions.assertSame;
+import static org.junit.jupiter.api.Assertions.assertTrue;
 
 @DisplayName("Testing Hand enum")
 class HandTest {
     private static final int TOTAL_ITEMS = 4;
+
+    @ParameterizedTest
+    @EnumSource(Hand.class)
+    @DisplayName("Testing valueOfInt() method")
+    void valueOfCodeTest(Hand hand) {
+        assertSame(hand, Hand.valueOfInt(hand.getId()));
+    }
 
     @Test
     @DisplayName("Testing valueOf() method")
