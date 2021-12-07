@@ -1,6 +1,7 @@
 package com.al.wa.enums;
 
 import lombok.AccessLevel;
+import lombok.Getter;
 import lombok.RequiredArgsConstructor;
 
 import java.util.HashMap;
@@ -10,6 +11,7 @@ import java.util.stream.Stream;
 /**
  * This enum contains Rock Paper Scissor game options.
  */
+@Getter
 @RequiredArgsConstructor(access = AccessLevel.PRIVATE)
 public enum Hand {
     ROCK(1, 2),
