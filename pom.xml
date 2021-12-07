@@ -30,6 +30,7 @@
         <junit.jupiter.version>5.8.2</junit.jupiter.version>
         <mockito.version>3.9.0</mockito.version>
         <maven.jar.version>2.4</maven.jar.version>
+        <maven-dependency-plugin.version>3.2.0</maven-dependency-plugin.version>
         <maven-compiler-plugin.version>3.6.0</maven-compiler-plugin.version>
         <maven-surefire-plugin.version>3.0.0-M5</maven-surefire-plugin.version>
         <maven-site-plugin.version>3.8.2</maven-site-plugin.version>
@@ -40,6 +41,7 @@
         <surefire.forkCount>2</surefire.forkCount>
         <surefire.reuseForks>true</surefire.reuseForks>
         <surefire.parallel.execution>methods</surefire.parallel.execution>
+        <classpath-directory-prefix>dependency-jars</classpath-directory-prefix>
         <execjar.name>rps-app</execjar.name>
         <docker-hub-user-id>your-docker-hub-user-id</docker-hub-user-id>
         <base.image.digest>@sha256:6c17f58746695a08b07b9bffd69bb6c46ff9380fdb974529135ad0d0167fd715</base.image.digest>
@@ -191,17 +193,38 @@
                 <artifactId>maven-jar-plugin</artifactId>
                 <version>${maven.jar.version}</version>
                 <configuration>
-                    <!-- Do not include logback.xml file in your Jar -->
-                    <excludes>
-                        <exclude>**/logback.xml</exclude>
-                    </excludes>
                     <archive>
                         <manifest>
+                            <!-- Add class path entry to the manifest -->
+                            <addClasspath>true</addClasspath>
                             <!-- Jar file entry point -->
                             <mainClass>com.al.wa.RpsGame</mainClass>
+                            <!-- Defining a classpath directory prefix -->
+                            <classpathPrefix>${classpath-directory-prefix}/</classpathPrefix>
                         </manifest>
                     </archive>
                 </configuration>
+            </plugin>
+
+            <!-- Plugin for coping project dependencies -->
+            <plugin>
+                <groupId>org.apache.maven.plugins</groupId>
+                <artifactId>maven-dependency-plugin</artifactId>
+                <version>${maven-dependency-plugin.version}</version>
+                <executions>
+                    <execution>
+                        <id>copy-dependencies</id>
+                        <phase>package</phase>
+                        <goals>
+                            <goal>copy-dependencies</goal>
+                        </goals>
+                        <configuration>
+                            <!-- Exclude Junit, we need runtime dependencies only -->
+                            <includeScope>runtime</includeScope>
+                            <outputDirectory>${project.build.directory}/${classpath-directory-prefix}/</outputDirectory>
+                        </configuration>
+                    </execution>
+                </executions>
             </plugin>
 
             <!-- JaCoCo plugin for generating test coverage reports -->

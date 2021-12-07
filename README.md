@@ -1,17 +1,7 @@
 # Rock Paper Scissors game with Markov Chain for AI
 [![CircleCI](https://circleci.com/gh/hokushin118/rps/tree/main.svg?style=svg)](https://circleci.com/gh/hokushin118/rps/tree/main)
 [![codecov](https://codecov.io/gh/hokushin118/rps/branch/main/graph/badge.svg?token=8FSYV51XAF)](https://codecov.io/gh/hokushin118/rps)
-
-[![Bugs](https://sonarcloud.io/api/project_badges/measure?project=hokushin118_rps&metric=bugs)](https://sonarcloud.io/summary/new_code?id=hokushin118_rps)
-[![Code Smells](https://sonarcloud.io/api/project_badges/measure?project=hokushin118_rps&metric=code_smells)](https://sonarcloud.io/summary/new_code?id=hokushin118_rps)
-[![Coverage](https://sonarcloud.io/api/project_badges/measure?project=hokushin118_rps&metric=coverage)](https://sonarcloud.io/summary/new_code?id=hokushin118_rps)
-[![Duplicated Lines (%)](https://sonarcloud.io/api/project_badges/measure?project=hokushin118_rps&metric=duplicated_lines_density)](https://sonarcloud.io/summary/new_code?id=hokushin118_rps)
-[![Lines of Code](https://sonarcloud.io/api/project_badges/measure?project=hokushin118_rps&metric=ncloc)](https://sonarcloud.io/summary/new_code?id=hokushin118_rps)
-[![Maintainability Rating](https://sonarcloud.io/api/project_badges/measure?project=hokushin118_rps&metric=sqale_rating)](https://sonarcloud.io/summary/new_code?id=hokushin118_rps)
-[![Reliability Rating](https://sonarcloud.io/api/project_badges/measure?project=hokushin118_rps&metric=reliability_rating)](https://sonarcloud.io/summary/new_code?id=hokushin118_rps)
-[![Security Rating](https://sonarcloud.io/api/project_badges/measure?project=hokushin118_rps&metric=security_rating)](https://sonarcloud.io/summary/new_code?id=hokushin118_rps)
-[![Technical Debt](https://sonarcloud.io/api/project_badges/measure?project=hokushin118_rps&metric=sqale_index)](https://sonarcloud.io/summary/new_code?id=hokushin118_rps)
-[![Vulnerabilities](https://sonarcloud.io/api/project_badges/measure?project=hokushin118_rps&metric=vulnerabilities)](https://sonarcloud.io/summary/new_code?id=hokushin118_rps)
+[![Quality Gate Status](https://sonarcloud.io/api/project_badges/measure?project=hokushin118_rps&metric=alert_status)](https://sonarcloud.io/summary/new_code?id=hokushin118_rps)
 
 ### Prerequisites
 * Java 11 or higher.
