@@ -2,22 +2,18 @@ package com.al.wa.helpers;
 
 import com.al.wa.enums.Hand;
 
-import static com.al.wa.enums.Hand.PAPER;
-import static com.al.wa.enums.Hand.ROCK;
-import static com.al.wa.enums.Hand.SCISSORS;
+import static com.al.wa.enums.Hand.*;
 
 /**
  * This class contains Markov Chain Algorithm functionality.
  */
 public class MarkovChain {
-    private static final int HAND_LENGTH = 3;
+    private static final int HAND_LENGTH = 3; // total number of options
 
-    // Markov Chain for the AI of machine player (stores probabilities)
-    private final float[][] chain;
+    private final float[][] chain; // Markov Chain for the AI of machine player (stores probabilities)
     private final int[] timesPlayed;
 
-    // Last move of human player
-    private int lastMove;
+    private int lastMove; // last move of human player
 
     public MarkovChain() {
         this.chain = new float[][]{

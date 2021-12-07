@@ -16,7 +16,7 @@ import static org.junit.jupiter.api.Assertions.assertTrue;
 
 @DisplayName("Testing Hand enum")
 class HandTest {
-    private static final int TOTAL_ITEMS = 4;
+    private static final int TOTAL_ITEMS = 4; // total number of items defined in enum
 
     @ParameterizedTest
     @EnumSource(Hand.class)

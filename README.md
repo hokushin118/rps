@@ -1,9 +1,8 @@
 # Rock Paper Scissors game with Markov Chain for AI
-[![Codacy Badge](https://api.codacy.com/project/badge/Grade/ae18bc7d448c4b9ab13811b1b08f6c13)](https://app.codacy.com/gh/hokushin118/rps?utm_source=github.com&utm_medium=referral&utm_content=hokushin118/rps&utm_campaign=Badge_Grade_Settings)
 [![CircleCI](https://circleci.com/gh/hokushin118/rps/tree/main.svg?style=svg)](https://circleci.com/gh/hokushin118/rps/tree/main)
 [![codecov](https://codecov.io/gh/hokushin118/rps/branch/main/graph/badge.svg?token=8FSYV51XAF)](https://codecov.io/gh/hokushin118/rps)
 [![Quality Gate Status](https://sonarcloud.io/api/project_badges/measure?project=hokushin118_rps&metric=alert_status)](https://sonarcloud.io/summary/new_code?id=hokushin118_rps)
-[![Codacy Badge](https://app.codacy.com/project/badge/Grade/0e39f5511a964b5cbd153242a57d5bca)](https://www.codacy.com/gh/hokushin118/rps/dashboard?utm_source=github.com&amp;utm_medium=referral&amp;utm_content=hokushin118/rps&amp;utm_campaign=Badge_Grade)
+[![Codacy Badge](https://api.codacy.com/project/badge/Grade/ae18bc7d448c4b9ab13811b1b08f6c13)](https://app.codacy.com/gh/hokushin118/rps?utm_source=github.com&utm_medium=referral&utm_content=hokushin118/rps&utm_campaign=Badge_Grade_Settings)
 ### Prerequisites
 * Java 11 or higher.
 * Maven 3.6.0 or higher.

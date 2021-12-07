@@ -5,12 +5,12 @@
 
     <groupId>com.al.imc</groupId>
     <artifactId>rps-app</artifactId>
-    <version>1.0.0-SNAPSHOT</version>
+    <version>1.0.1-SNAPSHOT</version>
 
     <packaging>jar</packaging>
 
-    <name>Rock Paper Scissor</name>
-    <description>Rock Paper Scissor demo application.</description>
+    <name>Rock Paper Scissors</name>
+    <description>Rock Paper Scissors demo application.</description>
 
     <licenses>
         <license>
@@ -37,20 +37,32 @@
         <maven-project-info-reports-plugin.version>3.1.2</maven-project-info-reports-plugin.version>
         <jacoco-maven-plugin.version>0.8.7</jacoco-maven-plugin.version>
         <maven-enforcer-plugin.version>3.0.0-M3</maven-enforcer-plugin.version>
-        <jib-maven-plugin.version>3.1.1</jib-maven-plugin.version>
+        <jib-maven-plugin.version>3.1.4</jib-maven-plugin.version>
         <surefire.forkCount>2</surefire.forkCount>
         <surefire.reuseForks>true</surefire.reuseForks>
         <surefire.parallel.execution>methods</surefire.parallel.execution>
         <classpath-directory-prefix>dependency-jars</classpath-directory-prefix>
         <execjar.name>rps-app</execjar.name>
-        <docker-hub-user-id>your-docker-hub-user-id</docker-hub-user-id>
+        <!-- Docker Hub properties -->
+        <docker-hub-user-id>hokushin</docker-hub-user-id>
         <base.image.digest>@sha256:6c17f58746695a08b07b9bffd69bb6c46ff9380fdb974529135ad0d0167fd715</base.image.digest>
         <base.image.path>openjdk:11-jdk-slim</base.image.path>
-        <image.path>${docker-hub-user-id}/${project.artifactId}</image.path>
+        <image.path>${docker-hub-user-id}/${execjar.name}</image.path>
+        <!-- Sonar properties -->
         <sonar.organization>hokushin118</sonar.organization>
         <sonar.host.url>https://sonarcloud.io</sonar.host.url>
-        <sonar.exclusions>com/al/wa/RpsGame.java</sonar.exclusions>
-        <sonar.coverage.jacoco.xmlReportPaths>target/site/jacoco/jacoco.xml</sonar.coverage.jacoco.xmlReportPaths>
+        <sonar.coverage.exclusions>
+            **/RpsGame.java
+        </sonar.coverage.exclusions>
+        <sonar.coverage.jacoco.xmlReportPaths>
+            ${project.build.directory}/site/jacoco/jacoco.xml
+        </sonar.coverage.jacoco.xmlReportPaths>
+        <!-- CircleCI properties -->
+        <build.number>000</build.number>
+        <commit.hash>local-build</commit.hash>
+        <build.user>local-build</build.user>
+        <build.repo>local-build</build.repo>
+        <circle.workflow>local-build</circle.workflow>
     </properties>
 
     <profiles>
@@ -234,6 +246,12 @@
                 <groupId>org.jacoco</groupId>
                 <artifactId>jacoco-maven-plugin</artifactId>
                 <version>${jacoco-maven-plugin.version}</version>
+                <configuration>
+                    <excludes>
+                        <!-- Exclude RpsGame class from code coverage -->
+                        <exclude>com/al/wa/RpsGame.class</exclude>
+                    </excludes>
+                </configuration>
                 <executions>
                     <!--
                       Prepares the property pointing to the JaCoCo runtime agent which
@@ -320,21 +338,16 @@
                 <configuration>
                     <!-- Base image (OpenJDK 11) with digest specification -->
                     <from>
-                        <image>registry://${base.image.path}${base.image.digest}</image>
+                        <image>${base.image.path}${base.image.digest}</image>
                     </from>
                     <to>
                         <!-- Path to your Docker registry repository -->
                         <image>${image.path}</image>
                         <!-- Tags of the image -->
                         <tags>
-                            <tag>${project.version}</tag>
+                            <tag>${project.version}-b${build.number}</tag>
                             <tag>latest</tag>
                         </tags>
-                        <!-- Docker Hub Registry credentials -->
-                        <auth>
-                            <username>${docker-hub-user-id}</username>
-                            <password>your-pwd</password>
-                        </auth>
                     </to>
                     <container>
                         <!-- Startup flags to be passed to the JVM -->
@@ -342,6 +355,12 @@
                             <jvmFlag>-Xms512m</jvmFlag>
                             <jvmFlag>-Xmx512m</jvmFlag>
                             <jvmFlag>-Dfile.encoding=utf-8</jvmFlag>
+                            <!-- CircleCI env variables -->
+                            <jvmFlag>-Dcircle_build_num=${build.number}</jvmFlag>
+                            <jvmFlag>-Dcircle_commit=${commit.hash}</jvmFlag>
+                            <jvmFlag>-Dcircle_user=${build.user}</jvmFlag>
+                            <jvmFlag>-Dcircle_repo=${build.repo}</jvmFlag>
+                            <jvmFlag>-Dcircle_workflow_guid=${circle.workflow}</jvmFlag>
                         </jvmFlags>
                         <volumes>
                             <volume>/tmp</volume>
