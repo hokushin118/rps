@@ -10,7 +10,7 @@ class RpsGameTest {
 
     @Test
     @DisplayName("Testing constructor")
-    void main() {
+    void constructorTest() {
         assertDoesNotThrow(() -> new RpsGame());
     }
 }
