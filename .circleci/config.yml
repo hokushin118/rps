@@ -26,7 +26,7 @@ commands:
           name: Sonar Scan
           command: |
             sudo chmod +x ./mvnw
-            ./mvnw verify sonar:sonar -Dsonar.projectKey=hokushin118_rps
+            ./mvnw verify sonar:sonar -Dsonar.projectKey=$SONAR_PROJECT_KEY
       - save_cache_cmd
   test:
     steps:
@@ -37,12 +37,12 @@ commands:
           command: |
             sudo chmod +x ./mvnw
             ./mvnw test
-            ./mvnw verify sonar:sonar -Dsonar.projectKey=hokushin118_rps
+            ./mvnw verify sonar:sonar -Dsonar.projectKey=$SONAR_PROJECT_KEY
       - store_artifacts:
           path: target
       - codecov/upload:
           file: './target/site/jacoco/jacoco.xml'
-          token: c504ea90-1c36-406b-90a3-44607a337f73
+          token: $CODECAV_TOKEN
       - save_cache_cmd
   build:
     steps:
