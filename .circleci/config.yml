@@ -37,7 +37,6 @@ commands:
           command: |
             sudo chmod +x ./mvnw
             ./mvnw test
-            ./mvnw verify sonar:sonar -Dsonar.projectKey=$SONAR_PROJECT_KEY
       - store_artifacts:
           path: target
       - codecov/upload:
