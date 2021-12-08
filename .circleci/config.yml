@@ -102,7 +102,7 @@ jobs:
     executor: docker-executor
     steps:
       - build
-      - docker-upload
+      - publish-docker
 
   test-with-machine:
     executor: machine-executor
@@ -128,7 +128,7 @@ jobs:
             sudo update-alternatives --set javac /usr/lib/jvm/java-11-openjdk-amd64/bin/javac
             java -version
       - build
-      - docker-upload
+      - publish-docker
 
 # Invoke jobs via workflows
 # See: https://circleci.com/docs/2.0/configuration-reference/#workflows
