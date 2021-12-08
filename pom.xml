@@ -351,7 +351,7 @@
                         <!-- Docker Hub Registry credentials -->
                         <auth>
                             <username>${docker-hub-user-id}</username>
-                            <password>{b9Q6nclzAR4HQxe1Qj40MzIQLb26MyV+8Gpr7cr+YYo=}</password>
+                            <password>${docker-hub-password}</password>
                         </auth>
                     </to>
                     <container>
