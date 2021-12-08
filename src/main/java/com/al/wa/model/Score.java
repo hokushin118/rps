@@ -6,7 +6,7 @@ import java.util.concurrent.atomic.AtomicInteger;
  * This class contains Rock Paper Scissor game related statistics.
  */
 public class Score {
-    static final int INITIAL_VALUE = 0;
+    private static final int INITIAL_VALUE = 0;
 
     private final AtomicInteger gamesWonByUser;
     private final AtomicInteger totalGames;

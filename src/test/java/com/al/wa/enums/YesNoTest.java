@@ -12,7 +12,7 @@ import static org.junit.jupiter.api.Assertions.assertSame;
 
 @DisplayName("Testing YesNo enum")
 class YesNoTest {
-    private static final int TOTAL_ITEMS = 2;
+    private static final int TOTAL_ITEMS = 2; // total number of items defined in enum
 
     @ParameterizedTest
     @EnumSource(YesNo.class)

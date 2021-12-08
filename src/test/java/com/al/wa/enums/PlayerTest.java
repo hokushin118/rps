@@ -10,7 +10,7 @@ import static org.junit.jupiter.api.Assertions.assertEquals;
 
 @DisplayName("Testing Player enum")
 class PlayerTest {
-    private static final int TOTAL_ITEMS = 3;
+    private static final int TOTAL_ITEMS = 3; // total number of items defined in enum
 
     @Test
     void valuesTest() {

@@ -53,6 +53,16 @@ commands:
             sudo chmod +x ./mvnw
             ./mvnw -Dmaven.test.skip=true package
       - save_cache_cmd
+  docker-upload:
+    steps:
+      - checkout # check out source code to working directory
+      - restore_cache_cmd
+      - run:
+          name: Create and upload Docker image to the Docker Hub repository
+          command: |
+            sudo chmod +x ./mvnw
+            ./mvnw jib:build -Pdocker
+      - save_cache_cmd
 
 executors:
   docker-executor:
@@ -79,6 +89,7 @@ jobs:
     executor: docker-executor
     steps:
       - build
+      - docker-upload
 
   test-with-machine:
     executor: machine-executor
@@ -104,6 +115,7 @@ jobs:
             sudo update-alternatives --set javac /usr/lib/jvm/java-11-openjdk-amd64/bin/javac
             java -version
       - build
+      - docker-upload
 
 # Invoke jobs via workflows
 # See: https://circleci.com/docs/2.0/configuration-reference/#workflows

@@ -44,10 +44,10 @@
         <classpath-directory-prefix>dependency-jars</classpath-directory-prefix>
         <execjar.name>rps-app</execjar.name>
         <!-- Docker Hub properties -->
-        <docker-hub-user-id>your-docker-hub-user-id</docker-hub-user-id>
+        <docker-hub-user-id>hokushin</docker-hub-user-id>
         <base.image.digest>@sha256:6c17f58746695a08b07b9bffd69bb6c46ff9380fdb974529135ad0d0167fd715</base.image.digest>
         <base.image.path>openjdk:11-jdk-slim</base.image.path>
-        <image.path>${docker-hub-user-id}/${project.artifactId}</image.path>
+        <image.path>${docker-hub-user-id}/${execjar.name}</image.path>
         <!-- Sonar properties -->
         <sonar.organization>hokushin118</sonar.organization>
         <sonar.host.url>https://sonarcloud.io</sonar.host.url>
@@ -57,6 +57,12 @@
         <sonar.coverage.jacoco.xmlReportPaths>
             ${project.build.directory}/site/jacoco/jacoco.xml
         </sonar.coverage.jacoco.xmlReportPaths>
+        <!-- CircleCI properties -->
+        <build.number>000</build.number>
+        <commit.hash>local-build</commit.hash>
+        <build.user>local-build</build.user>
+        <build.repo>local-build</build.repo>
+        <circle.workflow>local-build</circle.workflow>
     </properties>
 
     <profiles>
@@ -339,13 +345,13 @@
                         <image>${image.path}</image>
                         <!-- Tags of the image -->
                         <tags>
-                            <tag>${project.version}</tag>
+                            <tag>${project.version}-b${build.number}</tag>
                             <tag>latest</tag>
                         </tags>
                         <!-- Docker Hub Registry credentials -->
                         <auth>
                             <username>${docker-hub-user-id}</username>
-                            <password>your-pwd</password>
+                            <password>{duGz1FxTqDwHPWExWXwyAjYORnVGJQbRh4+u217Hhnc=}</password>
                         </auth>
                     </to>
                     <container>
@@ -354,6 +360,12 @@
                             <jvmFlag>-Xms512m</jvmFlag>
                             <jvmFlag>-Xmx512m</jvmFlag>
                             <jvmFlag>-Dfile.encoding=utf-8</jvmFlag>
+                            <!-- CircleCI env variables -->
+                            <jvmFlag>-Dcircle_build_num=${build.number}</jvmFlag>
+                            <jvmFlag>-Dcircle_commit=${commit.hash}</jvmFlag>
+                            <jvmFlag>-Dcircle_user=${build.user}</jvmFlag>
+                            <jvmFlag>-Dcircle_repo=${build.repo}</jvmFlag>
+                            <jvmFlag>-Dcircle_workflow_guid=${circle.workflow}</jvmFlag>
                         </jvmFlags>
                         <volumes>
                             <volume>/tmp</volume>
