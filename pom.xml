@@ -349,10 +349,10 @@
                             <tag>latest</tag>
                         </tags>
                         <!-- Docker Hub Registry credentials -->
-                        <auth>
-                            <username>${docker-hub-user-id}</username>
-                            <password>{b9Q6nclzAR4HQxe1Qj40MzIQLb26MyV+8Gpr7cr+YYo=}</password>
-                        </auth>
+<!--                        <auth>-->
+<!--                            <username>${docker-hub-user-id}</username>-->
+<!--                            <password>{b9Q6nclzAR4HQxe1Qj40MzIQLb26MyV+8Gpr7cr+YYo=}</password>-->
+<!--                        </auth>-->
                     </to>
                     <container>
                         <!-- Startup flags to be passed to the JVM -->
