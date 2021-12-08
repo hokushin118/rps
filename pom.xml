@@ -43,16 +43,20 @@
         <surefire.parallel.execution>methods</surefire.parallel.execution>
         <classpath-directory-prefix>dependency-jars</classpath-directory-prefix>
         <execjar.name>rps-app</execjar.name>
+        <!-- Docker Hub properties -->
         <docker-hub-user-id>your-docker-hub-user-id</docker-hub-user-id>
         <base.image.digest>@sha256:6c17f58746695a08b07b9bffd69bb6c46ff9380fdb974529135ad0d0167fd715</base.image.digest>
         <base.image.path>openjdk:11-jdk-slim</base.image.path>
         <image.path>${docker-hub-user-id}/${project.artifactId}</image.path>
+        <!-- Sonar properties -->
         <sonar.organization>hokushin118</sonar.organization>
         <sonar.host.url>https://sonarcloud.io</sonar.host.url>
         <sonar.coverage.exclusions>
             **/RpsGame.java
         </sonar.coverage.exclusions>
-        <sonar.coverage.jacoco.xmlReportPaths>${project.build.directory}/site/jacoco/jacoco.xml</sonar.coverage.jacoco.xmlReportPaths>
+        <sonar.coverage.jacoco.xmlReportPaths>
+            ${project.build.directory}/site/jacoco/jacoco.xml
+        </sonar.coverage.jacoco.xmlReportPaths>
     </properties>
 
     <profiles>
