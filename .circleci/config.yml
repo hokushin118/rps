@@ -4,6 +4,7 @@ version: 2.1
 
 orbs:
   codecov: codecov/codecov@1.0.2
+  sonarcloud: sonarsource/sonarcloud@1.0.3
 
 commands:
   restore_cache_cmd:
@@ -18,16 +19,6 @@ commands:
           paths:
             - ~/.m2
           key: v1-dependencies-{{ checksum "pom.xml" }}
-  sonar-scan:
-    steps:
-      - checkout # check out source code to working directory
-      - restore_cache_cmd
-      - run:
-          name: Sonar Scan
-          command: |
-            sudo chmod +x ./mvnw
-            ./mvnw verify sonar:sonar -Dsonar.projectKey=$SONAR_PROJECT_KEY
-      - save_cache_cmd
   test:
     steps:
       - checkout # check out source code to working directory
@@ -37,7 +28,6 @@ commands:
           command: |
             sudo chmod +x ./mvnw
             ./mvnw test
-            ./mvnw verify sonar:sonar -Dsonar.projectKey=$SONAR_PROJECT_KEY
       - store_artifacts:
           path: target
       - codecov/upload:
@@ -74,7 +64,7 @@ jobs:
     # See: https://circleci.com/docs/2.0/configuration-reference/#steps
     steps:
       - test
-      - sonar-scan
+      - sonarcloud/scan
 
   build-with-docker:
     executor: docker-executor
@@ -92,7 +82,7 @@ jobs:
             sudo update-alternatives --set javac /usr/lib/jvm/java-11-openjdk-amd64/bin/javac
             java -version
       - test
-      - sonar-scan
+      - sonarcloud/scan
 
   build-with-machine:
     executor: machine-executor
@@ -115,7 +105,7 @@ workflows:
       - test-with-docker:
           requires:
             - build-with-docker
-          context: SonarCloud
+          context: sonarcloud
 
   build-then-test-with-machine:
     jobs:
@@ -123,4 +113,4 @@ workflows:
       - test-with-machine:
           requires:
             - build-with-machine
-          context: SonarCloud
+          context: sonarcloud
