@@ -37,7 +37,7 @@
         <maven-project-info-reports-plugin.version>3.1.2</maven-project-info-reports-plugin.version>
         <jacoco-maven-plugin.version>0.8.7</jacoco-maven-plugin.version>
         <maven-enforcer-plugin.version>3.0.0-M3</maven-enforcer-plugin.version>
-        <jib-maven-plugin.version>3.1.1</jib-maven-plugin.version>
+        <jib-maven-plugin.version>3.1.4</jib-maven-plugin.version>
         <surefire.forkCount>2</surefire.forkCount>
         <surefire.reuseForks>true</surefire.reuseForks>
         <surefire.parallel.execution>methods</surefire.parallel.execution>
