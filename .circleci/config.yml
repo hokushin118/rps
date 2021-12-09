@@ -169,10 +169,10 @@ workflows:
       - test-with-docker:
           requires:
             - build-with-docker
+          context: SonarCloud
       - publish-with-docker:
           requires:
-          - test-with-docker
-        context: SonarCloud
+            - test-with-docker
 
   build-then-test-with-machine:
     jobs:
@@ -180,7 +180,7 @@ workflows:
       - test-with-machine:
           requires:
             - build-with-machine
+          context: SonarCloud
       - publish-with-machine:
           requires:
             - test-with-machine
-          context: SonarCloud
