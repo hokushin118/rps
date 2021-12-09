@@ -5,12 +5,12 @@
 
     <groupId>com.al.imc</groupId>
     <artifactId>rps-app</artifactId>
-    <version>1.0.0-SNAPSHOT</version>
+    <version>1.0.1-SNAPSHOT</version>
 
     <packaging>jar</packaging>
 
-    <name>Rock Paper Scissor</name>
-    <description>Rock Paper Scissor demo application.</description>
+    <name>Rock Paper Scissors</name>
+    <description>Rock Paper Scissors demo application.</description>
 
     <licenses>
         <license>
@@ -44,10 +44,10 @@
         <classpath-directory-prefix>dependency-jars</classpath-directory-prefix>
         <execjar.name>rps-app</execjar.name>
         <!-- Docker Hub properties -->
-        <docker-hub-user-id>hokushin</docker-hub-user-id>
+        <docker-user-id>hokushin</docker-user-id>
         <base.image.digest>@sha256:6c17f58746695a08b07b9bffd69bb6c46ff9380fdb974529135ad0d0167fd715</base.image.digest>
         <base.image.path>openjdk:11-jdk-slim</base.image.path>
-        <image.path>${docker-hub-user-id}/${execjar.name}</image.path>
+        <image.path>${docker-user-id}/${execjar.name}</image.path>
         <!-- Sonar properties -->
         <sonar.organization>hokushin118</sonar.organization>
         <sonar.host.url>https://sonarcloud.io</sonar.host.url>
@@ -338,7 +338,7 @@
                 <configuration>
                     <!-- Base image (OpenJDK 11) with digest specification -->
                     <from>
-                        <image>registry://${base.image.path}${base.image.digest}</image>
+                        <image>${base.image.path}${base.image.digest}</image>
                     </from>
                     <to>
                         <!-- Path to your Docker registry repository -->
@@ -348,11 +348,6 @@
                             <tag>${project.version}-b${build.number}</tag>
                             <tag>latest</tag>
                         </tags>
-                        <!-- Docker Hub Registry credentials -->
-                        <auth>
-                            <username>${docker-hub-user-id}</username>
-                            <password>${docker-hub-password}</password>
-                        </auth>
                     </to>
                     <container>
                         <!-- Startup flags to be passed to the JVM -->

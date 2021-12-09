@@ -5,23 +5,9 @@
           xsi:schemaLocation="http://maven.apache.org/SETTINGS/1.0.0 http://maven.apache.org/xsd/settings-1.0.0.xsd">
     <servers>
         <server>
-            <id>registry.hub.docker.com</id>
+            <id>docker.io</id>
             <username>hokushin</username>
-            <password>{b9Q6nclzAR4HQxe1Qj40MzIQLb26MyV+8Gpr7cr+YYo=}</password>
+            <password>{r4FBArVsajUHPYa12iI3HJr5qcX525myxqy3Yibvs+tOIPAtVnPTCYxoNt/E4B+bYn3VYiJCUJqHn3BnIPFMcw==}</password>
         </server>
     </servers>
-
-    <profiles>
-        <profile>
-            <id>dev</id>
-            <properties>
-                <docker-hub-user-id>hokushin</docker-hub-user-id>
-                <docker-hub-password>{b9Q6nclzAR4HQxe1Qj40MzIQLb26MyV+8Gpr7cr+YYo=}</docker-hub-password>
-            </properties>
-        </profile>
-    </profiles>
-
-    <activeProfiles>
-        <activeProfile>dev</activeProfile>
-    </activeProfiles>
 </settings>
