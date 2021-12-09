@@ -70,12 +70,14 @@ commands:
       - run:
           name: Create and publish Docker image to the Docker Hub repository with jib plugin
           command: |
-            ./mvnw compile jib:build -Djib.to.auth.password=${RPS_DOCKER_HUB_TOKEN} -Pdocker -B -DskipTests=true \
-                                              -Dbuild.number=${CIRCLE_BUILD_NUM} \
-                                              -Dcommit.hash=${CIRCLE_SHA1} \
-                                              -Dcircle.workflow.guid=${CIRCLE_WORKFLOW_ID} \
-                                              -Dbuild.user=${CIRCLE_PROJECT_USERNAME} \
-                                              -Dbuild.repo=${CIRCLE_PROJECT_REPONAME}
+            ./mvnw compile jib:build -Djib.to.auth.username=${DOCKER_HUB_ID} \
+                                     -Djib.to.auth.password=${RPS_DOCKER_HUB_TOKEN} \
+                                     -Pdocker -B -DskipTests=true \
+                                     -Dbuild.number=${CIRCLE_BUILD_NUM} \
+                                     -Dcommit.hash=${CIRCLE_SHA1} \
+                                     -Dcircle.workflow.guid=${CIRCLE_WORKFLOW_ID} \
+                                     -Dbuild.user=${CIRCLE_PROJECT_USERNAME} \
+                                     -Dbuild.repo=${CIRCLE_PROJECT_REPONAME}
       - save_cache_cmd
 
   build:
