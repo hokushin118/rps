@@ -63,12 +63,13 @@ commands:
     steps:
       - checkout # check out source code to working directory
       - restore_cache_cmd
-      - run: ./mvnw dependency:go-offline
-      - run: cp .mvn/wrapper/settings.xml ~/.m2/settings.xml
-      - run: echo "<settingsSecurity><master>${MAVEN_SECURITY_MASTER}</master></settingsSecurity>" > ~/.m2/settings-security.xml
       - run:
           name: Create and publish Docker image to the Docker Hub repository with jib plugin
           command: |
+            sudo chmod +x ./mvnw
+            ./mvnw dependency:go-offline
+            cp .mvn/wrapper/settings.xml ~/.m2/settings.xml
+            echo "<settingsSecurity><master>${MAVEN_SECURITY_MASTER}</master></settingsSecurity>" > ~/.m2/settings-security.xml
             ./mvnw compile jib:build -Pdocker -B -DskipTests=true \
                                               -Dbuild.number=${CIRCLE_BUILD_NUM} \
                                               -Dcommit.hash=${CIRCLE_SHA1} \
