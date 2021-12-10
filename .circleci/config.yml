@@ -57,12 +57,13 @@ commands:
       - run: cp .mvn/wrapper/settings.xml ~/.m2/settings.xml
       - run: chmod 700 ~/.m2/settings.xml
       - run: echo "<settingsSecurity><master>${MAVEN_SECURITY_PASSWORD}</master></settingsSecurity>" > ~/.m2/settings-security.xml
-      - run: chmod 700 ~/.m2/settings-security.xml
-    #  - run: ./mvnw deploy
+      - run: ./mvnw deploy
       - run:
           name: Create and publish Docker image to the Docker Hub repository with jib plugin
           command: |
-            ./mvnw compile jib:build -B -DskipTests=true \
+            ./mvnw compile jib:build -Djib.to.auth.username=${DOCKER_HUB_ID} \
+                                     -Djib.to.auth.password=${RPS_DOCKER_HUB_TOKEN} \
+                                     -B -DskipTests=true \
                                      -Dbuild.number=${CIRCLE_BUILD_NUM} \
                                      -Dcommit.hash=${CIRCLE_SHA1} \
                                      -Dcircle.workflow.guid=${CIRCLE_WORKFLOW_ID} \
