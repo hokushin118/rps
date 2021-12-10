@@ -452,7 +452,7 @@
         <repository>
             <id>internal.repo</id>
             <name>Temporary Staging Repository</name>
-            <url>file://${project.build.directory}/nexus-repo</url>
+            <url>https://github.com/hokushin118/rps/${project.build.directory}/nexus-repo</url>
         </repository>
     </distributionManagement>
 </project>
