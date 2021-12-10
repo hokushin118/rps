@@ -3,7 +3,7 @@
          xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
     <modelVersion>4.0.0</modelVersion>
 
-    <groupId>com.al.imc</groupId>
+    <groupId>com.al.wa</groupId>
     <artifactId>rps-app</artifactId>
     <version>1.0.1-SNAPSHOT</version>
 
@@ -71,6 +71,8 @@
         <!-- GitHub properties -->
         <!-- Github server corresponds to entry in ~/.m2/settings.xml -->
         <github.global.server>github</github.global.server>
+        <!-- GitHub repo name -->
+        <github.repo.name>rps</github.repo.name>
         <!-- GitHub account username -->
         <github.repo.username>hokushin118</github.repo.username>
         <!-- Branch for storing deployed artifacts, does not need to exist, will be created by plugin -->
@@ -427,11 +429,14 @@
                     <outputDirectory>${project.build.directory}/${github-staging-repo}</outputDirectory>
                     <!-- Remote branch (that is used as Nexus OSS repo) name -->
                     <branch>refs/heads/${github-staging-repo}</branch>
+                    <!-- If you remove this then the old artifact will be removed and new
+                          one will replace. But with the merge tag you can just release by changing the version -->
+<!--                    <merge>true</merge>-->
                     <includes>
                         <include>**/*</include>
                     </includes>
                     <!-- GitHub repo name -->
-                    <repositoryName>rps</repositoryName>
+                    <repositoryName>${github.repo.name}</repositoryName>
                     <!-- GitHub repo username  -->
                     <repositoryOwner>${github.repo.username}</repositoryOwner>
                 </configuration>

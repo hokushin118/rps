@@ -13,8 +13,10 @@
 
         <server>
             <id>github</id>
+            <!-- GitHun username -->
             <username>hokushin118</username>
-            <password>{i5bkIulH3CAH0bccNsFLdkkkhNfIxVwcs5zzBQrSA03BhhnW7F3C7hWMpbPwQz3zgIHxjALwzn4OATq7zPRPbA==}</password>
+            <!-- GitHub Personal Token -->
+            <password>{0/fnU7SXyuQHQFJ331nKfL6UTsTyUnZc5wpWhVenkyW7755DGVmEtHthcglaOiHZQXM90W6XyY9OaZHD6s7Fzw==}</password>
         </server>
     </servers>
 </settings>
