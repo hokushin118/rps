@@ -21,6 +21,17 @@ commands:
             - ~/.m2
           key: v1-dependencies-{{ checksum "pom.xml" }}
 
+  move_settings_cmd:
+    steps:
+      - run:
+          name: Moving settings.xml file to ~/.m2 folder
+          command: |
+            sudo chmod +x ./mvnw
+            ./mvnw dependency:go-offline
+            cp .mvn/wrapper/settings.xml ~/.m2/settings.xml
+            chmod 700 ~/.m2/settings.xml
+            echo "<settingsSecurity><master>${MAVEN_SECURITY_PASSWORD}</master></settingsSecurity>" > ~/.m2/settings-security.xml
+
   sonar-scan:
     steps:
       - checkout # check out source code to working directory
@@ -75,15 +86,10 @@ commands:
     steps:
       - checkout # check out source code to working directory
       - restore_cache_cmd
+      - move_settings_cmd
       - run:
           name: Deploying to Internal Artifactory (GitHub) with Maven Deploy plugin
-          command: |
-            sudo chmod +x ./mvnw
-            ./mvnw dependency:go-offline
-            cp .mvn/wrapper/settings.xml ~/.m2/settings.xml
-            chmod 700 ~/.m2/settings.xml
-            echo "<settingsSecurity><master>${MAVEN_SECURITY_PASSWORD}</master></settingsSecurity>" > ~/.m2/settings-security.xml
-            ./mvnw deploy
+          command: ./mvnw deploy
       - save_cache_cmd
 
   build:
@@ -190,16 +196,14 @@ workflows:
       - build-with-docker:
           filters:
             branches:
-              ignore:
-                - nexus-repo
+              ignore: nexus-repo
       - unit-test-with-docker:
           requires:
             - build-with-docker
           context: SonarCloud
           filters:
             branches:
-              ignore:
-                - nexus-repo
+              ignore: nexus-repo
       - publish-with-docker:
           requires:
             - unit-test-with-docker
@@ -220,16 +224,14 @@ workflows:
       - build-with-machine:
           filters:
             branches:
-              ignore:
-                - nexus-repo
+              ignore: nexus-repo
       - unit-test-with-machine:
           requires:
             - build-with-machine
           context: SonarCloud
           filters:
             branches:
-              ignore:
-                - nexus-repo
+              ignore: nexus-repo
       - publish-with-machine:
           requires:
             - unit-test-with-machine
