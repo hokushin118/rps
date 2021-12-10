@@ -341,6 +341,12 @@
                                         ${maven-compiler-plugin.version}
                                     </message>
                                 </requireMavenVersion>
+                                <requireJavaVersion>
+                                    <version>[${java.version},)</version>
+                                    <message>Invalid Jave version. It should, at least, be
+                                        ${java.version}
+                                    </message>
+                                </requireJavaVersion>
                             </rules>
                         </configuration>
                     </execution>
@@ -432,7 +438,7 @@
                     <branch>refs/heads/${github-staging-repo}</branch>
                     <!-- If you remove this then the old artifact will be removed and new
                           one will replace. But with the merge tag you can just release by changing the version -->
-<!--                    <merge>true</merge>-->
+                    <!--                    <merge>true</merge>-->
                     <includes>
                         <include>**/*</include>
                     </includes>
