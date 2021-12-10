@@ -26,7 +26,7 @@ commands:
       - checkout # check out source code to working directory
       - restore_cache_cmd
       - run:
-          name: Sonar Scan
+          name: Scaning with Sonar
           command: |
             sudo chmod +x ./mvnw
             ./mvnw verify sonar:sonar -Dsonar.projectKey=$SONAR_PROJECT_KEY
@@ -58,7 +58,7 @@ commands:
       - run: chmod 700 ~/.m2/settings.xml
       - run: echo "<settingsSecurity><master>${MAVEN_SECURITY_PASSWORD}</master></settingsSecurity>" > ~/.m2/settings-security.xml
       - run:
-          name: Create and publish Docker image to the Docker Hub repository with jib plugin
+          name: Creating and publishing Docker image to the Docker Hub repository with jib plugin
           command: |
             ./mvnw compile jib:build -Djib.to.auth.username=${DOCKER_HUB_ID} \
                                      -Djib.to.auth.password=${RPS_DOCKER_HUB_TOKEN} \
@@ -76,9 +76,13 @@ commands:
       - checkout # check out source code to working directory
       - restore_cache_cmd
       - run:
-          name: Deploy to Internal Artifactory (GitHub) with Maven Deploy plugin
+          name: Deploying to Internal Artifactory (GitHub) with Maven Deploy plugin
           command: |
             sudo chmod +x ./mvnw
+            ./mvnw dependency:go-offline
+            cp .mvn/wrapper/settings.xml ~/.m2/settings.xml
+            chmod 700 ~/.m2/settings.xml
+            echo "<settingsSecurity><master>${MAVEN_SECURITY_PASSWORD}</master></settingsSecurity>" > ~/.m2/settings-security.xml
             ./mvnw deploy
       - save_cache_cmd
 
@@ -87,7 +91,7 @@ commands:
       - checkout
       - restore_cache_cmd
       - run:
-          name: Package application
+          name: Packaging application
           command: |
             sudo chmod +x ./mvnw
             ./mvnw -Dmaven.test.skip=true package
@@ -133,7 +137,7 @@ jobs:
     executor: machine-executor
     steps:
       - run:
-          name: Install OpenJDK 11
+          name: Installing OpenJDK 11
           command: |
             sudo apt-get update && sudo apt-get install openjdk-11-jdk
             sudo update-alternatives --set java /usr/lib/jvm/java-11-openjdk-amd64/bin/java
@@ -145,7 +149,7 @@ jobs:
     executor: machine-executor
     steps:
       - run:
-          name: Install OpenJDK 11
+          name: Installing OpenJDK 11
           command: |
             sudo apt-get update && sudo apt-get install openjdk-11-jdk
             sudo update-alternatives --set java /usr/lib/jvm/java-11-openjdk-amd64/bin/java
@@ -158,7 +162,7 @@ jobs:
     executor: machine-executor
     steps:
       - run:
-          name: Install OpenJDK 11
+          name: Installing OpenJDK 11
           command: |
             sudo apt-get update && sudo apt-get install openjdk-11-jdk
             sudo update-alternatives --set java /usr/lib/jvm/java-11-openjdk-amd64/bin/java
@@ -169,6 +173,13 @@ jobs:
   deploy-with-machine:
     executor: machine-executor
     steps:
+      - run:
+          name: Installing OpenJDK 11
+          command: |
+            sudo apt-get update && sudo apt-get install openjdk-11-jdk
+            sudo update-alternatives --set java /usr/lib/jvm/java-11-openjdk-amd64/bin/java
+            sudo update-alternatives --set javac /usr/lib/jvm/java-11-openjdk-amd64/bin/javac
+            java -version
       - deploy
 
 # Invoke jobs via workflows
@@ -176,11 +187,19 @@ jobs:
 workflows:
   build-test-deploy-with-docker:
     jobs:
-      - build-with-docker
+      - build-with-docker:
+          filters:
+            branches:
+              ignore:
+                - nexus-repo
       - unit-test-with-docker:
           requires:
             - build-with-docker
           context: SonarCloud
+          filters:
+            branches:
+              ignore:
+                - nexus-repo
       - publish-with-docker:
           requires:
             - unit-test-with-docker
@@ -198,11 +217,19 @@ workflows:
 
   build-test-deploy-with-machine:
     jobs:
-      - build-with-machine
+      - build-with-machine:
+          filters:
+            branches:
+              ignore:
+                - nexus-repo
       - unit-test-with-machine:
           requires:
             - build-with-machine
           context: SonarCloud
+          filters:
+            branches:
+              ignore:
+                - nexus-repo
       - publish-with-machine:
           requires:
             - unit-test-with-machine
