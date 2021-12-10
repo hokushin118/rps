@@ -24,13 +24,23 @@ commands:
   move_settings_cmd:
     steps:
       - run:
-          name: Moving settings.xml file to ~/.m2 folder
+          name: Moving settings.xml and settings-security.xml files to ~/.m2 folder
           command: |
             sudo chmod +x ./mvnw
             ./mvnw dependency:go-offline
             cp .mvn/wrapper/settings.xml ~/.m2/settings.xml
             chmod 700 ~/.m2/settings.xml
             echo "<settingsSecurity><master>${MAVEN_SECURITY_PASSWORD}</master></settingsSecurity>" > ~/.m2/settings-security.xml
+
+  install_jdk_cmd:
+    steps:
+      - run:
+          name: Installing OpenJDK 11
+          command: |
+            sudo apt-get update && sudo apt-get install openjdk-11-jdk
+            sudo update-alternatives --set java /usr/lib/jvm/java-11-openjdk-amd64/bin/java
+            sudo update-alternatives --set javac /usr/lib/jvm/java-11-openjdk-amd64/bin/javac
+            java -version
 
   sonar-scan:
     steps:
@@ -63,11 +73,7 @@ commands:
     steps:
       - checkout # check out source code to working directory
       - restore_cache_cmd
-      - run: sudo chmod +x ./mvnw
-      - run: ./mvnw dependency:go-offline
-      - run: cp .mvn/wrapper/settings.xml ~/.m2/settings.xml
-      - run: chmod 700 ~/.m2/settings.xml
-      - run: echo "<settingsSecurity><master>${MAVEN_SECURITY_PASSWORD}</master></settingsSecurity>" > ~/.m2/settings-security.xml
+      - move_settings_cmd
       - run:
           name: Creating and publishing Docker image to the Docker Hub repository with jib plugin
           command: |
@@ -142,50 +148,26 @@ jobs:
   build-with-machine:
     executor: machine-executor
     steps:
-      - run:
-          name: Installing OpenJDK 11
-          command: |
-            sudo apt-get update && sudo apt-get install openjdk-11-jdk
-            sudo update-alternatives --set java /usr/lib/jvm/java-11-openjdk-amd64/bin/java
-            sudo update-alternatives --set javac /usr/lib/jvm/java-11-openjdk-amd64/bin/javac
-            java -version
+      - install_jdk_cmd
       - build
 
   unit-test-with-machine:
     executor: machine-executor
     steps:
-      - run:
-          name: Installing OpenJDK 11
-          command: |
-            sudo apt-get update && sudo apt-get install openjdk-11-jdk
-            sudo update-alternatives --set java /usr/lib/jvm/java-11-openjdk-amd64/bin/java
-            sudo update-alternatives --set javac /usr/lib/jvm/java-11-openjdk-amd64/bin/javac
-            java -version
+      - install_jdk_cmd
       - unit-test
       - sonar-scan
 
   publish-with-machine:
     executor: machine-executor
     steps:
-      - run:
-          name: Installing OpenJDK 11
-          command: |
-            sudo apt-get update && sudo apt-get install openjdk-11-jdk
-            sudo update-alternatives --set java /usr/lib/jvm/java-11-openjdk-amd64/bin/java
-            sudo update-alternatives --set javac /usr/lib/jvm/java-11-openjdk-amd64/bin/javac
-            java -version
+      - install_jdk_cmd
       - publish-docker
 
   deploy-with-machine:
     executor: machine-executor
     steps:
-      - run:
-          name: Installing OpenJDK 11
-          command: |
-            sudo apt-get update && sudo apt-get install openjdk-11-jdk
-            sudo update-alternatives --set java /usr/lib/jvm/java-11-openjdk-amd64/bin/java
-            sudo update-alternatives --set javac /usr/lib/jvm/java-11-openjdk-amd64/bin/javac
-            java -version
+      - install_jdk_cmd
       - deploy
 
 # Invoke jobs via workflows
