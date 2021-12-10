@@ -47,6 +47,7 @@
         <surefire.forkCount>2</surefire.forkCount>
         <surefire.reuseForks>true</surefire.reuseForks>
         <surefire.parallel.execution>methods</surefire.parallel.execution>
+        <!-- Maven Jar plugin properties -->
         <classpath-directory-prefix>dependency-jars</classpath-directory-prefix>
         <!-- Docker Hub properties -->
         <docker-hub-user-id>hokushin</docker-hub-user-id>
