@@ -7,7 +7,14 @@
         <server>
             <id>docker.io</id>
             <username>hokushin</username>
-            <password>{r4FBArVsajUHPYa12iI3HJr5qcX525myxqy3Yibvs+tOIPAtVnPTCYxoNt/E4B+bYn3VYiJCUJqHn3BnIPFMcw==}</password>
+            <password>{r4FBArVsajUHPYa12iI3HJr5qcX525myxqy3Yibvs+tOIPAtVnPTCYxoNt/E4B+bYn3VYiJCUJqHn3BnIPFMcw==}
+            </password>
+        </server>
+
+        <server>
+            <id>github</id>
+            <username>hokushin118</username>
+            <password>{yCt8klV1k64HrIhQxJT3IHTamGFDtv+Yar2qFWOKxjU=}</password>
         </server>
     </servers>
 </settings>

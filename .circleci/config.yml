@@ -53,7 +53,7 @@ commands:
       - checkout # check out source code to working directory
       - restore_cache_cmd
       - run:
-          name: Deploy to Nexus
+          name: Deploy to Internal Artifactory (GitHub) with Maven Deploy plugin
           command: |
             sudo chmod +x ./mvnw
             ./mvnw deploy
@@ -173,24 +173,46 @@ jobs:
 # Invoke jobs via workflows
 # See: https://circleci.com/docs/2.0/configuration-reference/#workflows
 workflows:
-  build-then-test-with-docker:
+  build-test-deploy-with-docker:
     jobs:
       - build-with-docker
       - test-with-docker:
           requires:
             - build-with-docker
           context: SonarCloud
-      - publish-with-docker:
+      - deploy-with-docker:
           requires:
             - test-with-docker
+          filters:
+            branches:
+              # Only master branch gets deployed
+              only: /^(master)$/
+      - publish-with-docker:
+          requires:
+            - deploy-with-docker
+          filters:
+            branches:
+              # Only master branch gets published
+              only: /^(master)$/
 
-  build-then-test-with-machine:
+  build-test-deploy-with-machine:
     jobs:
       - build-with-machine
       - test-with-machine:
           requires:
             - build-with-machine
           context: SonarCloud
-      - publish-with-machine:
+      - deploy-with-machine:
           requires:
             - test-with-machine
+          filters:
+            branches:
+              # Only master branch gets deployed
+              only: /^(master)$/
+      - publish-with-machine:
+          requires:
+            - deploy-with-machine
+          filters:
+            branches:
+              # Only master branch gets published
+              only: /^(master)$/
