@@ -56,9 +56,8 @@ commands:
       - run: ./mvnw dependency:go-offline
       - run: cp .mvn/wrapper/settings.xml ~/.m2/settings.xml
       - run: chmod 700 ~/.m2/settings.xml
-      - run: echo "<settingsSecurity><master>${MAVEN_SECURITY_MASTER}</master></settingsSecurity>" > ~/.m2/settings-security.xml
+      - run: echo "<settingsSecurity><master>${MAVEN_SECURITY_PASSWORD}</master></settingsSecurity>" > ~/.m2/settings-security.xml
       - run: cat ~/.m2/settings-security.xml
-      - run: ls –l ~/.m2/settings-security.xml
       - run: ./mvnw deploy
       - run:
           name: Create and publish Docker image to the Docker Hub repository with jib plugin
