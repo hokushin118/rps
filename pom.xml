@@ -20,15 +20,18 @@
     </licenses>
 
     <properties>
+        <!-- General properties -->
         <java.version>11</java.version>
         <maven.compiler.source>${java.version}</maven.compiler.source>
         <maven.compiler.target>${java.version}</maven.compiler.target>
         <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
         <project.reporting.outputEncoding>UTF-8</project.reporting.outputEncoding>
+        <!-- Dependencies -->
         <logback-classic.version>1.3.0-alpha10</logback-classic.version>
         <lombok.version>1.18.20</lombok.version>
         <junit.jupiter.version>5.8.2</junit.jupiter.version>
         <mockito.version>3.9.0</mockito.version>
+        <!-- Plugins -->
         <maven.jar.version>2.4</maven.jar.version>
         <maven-dependency-plugin.version>3.2.0</maven-dependency-plugin.version>
         <maven-compiler-plugin.version>3.6.0</maven-compiler-plugin.version>
@@ -38,18 +41,20 @@
         <jacoco-maven-plugin.version>0.8.7</jacoco-maven-plugin.version>
         <maven-enforcer-plugin.version>3.0.0-M3</maven-enforcer-plugin.version>
         <jib-maven-plugin.version>3.1.4</jib-maven-plugin.version>
+        <maven-deploy-plugin.version>2.8.2</maven-deploy-plugin.version>
+        <site-maven-plugin.version>0.12</site-maven-plugin.version>
+        <!-- Surefire plugin properties -->
         <surefire.forkCount>2</surefire.forkCount>
         <surefire.reuseForks>true</surefire.reuseForks>
         <surefire.parallel.execution>methods</surefire.parallel.execution>
         <classpath-directory-prefix>dependency-jars</classpath-directory-prefix>
-        <execjar.name>rps-app</execjar.name>
         <!-- Docker Hub properties -->
         <docker-hub-user-id>hokushin</docker-hub-user-id>
         <base.image.digest>@sha256:6c17f58746695a08b07b9bffd69bb6c46ff9380fdb974529135ad0d0167fd715</base.image.digest>
         <base.image.path>openjdk:11-jdk-slim</base.image.path>
         <image.path>${docker-hub-user-id}/${execjar.name}</image.path>
         <!-- Sonar properties -->
-        <sonar.organization>hokushin118</sonar.organization>
+        <sonar.organization>${github.repo.username}</sonar.organization>
         <sonar.host.url>https://sonarcloud.io</sonar.host.url>
         <sonar.coverage.exclusions>
             **/RpsGame.java
@@ -63,6 +68,15 @@
         <build.user>local-build</build.user>
         <build.repo>local-build</build.repo>
         <circle.workflow>local-build</circle.workflow>
+        <!-- GitHub properties -->
+        <!-- Github server corresponds to entry in ~/.m2/settings.xml -->
+        <github.global.server>github</github.global.server>
+        <!-- GitHub account username -->
+        <github.repo.username>hokushin118</github.repo.username>
+        <!-- Branch for storing deployed artifacts, does not need to exist, will be created by plugin -->
+        <github-staging-repo>nexus-repo</github-staging-repo>
+        <!-- Name of the project -->
+        <execjar.name>rps-app</execjar.name>
     </properties>
 
     <profiles>
@@ -377,7 +391,7 @@
                     <allowInsecureRegistries>true</allowInsecureRegistries>
                 </configuration>
                 <executions>
-                    <!-- Binding jib:build to build lifecycle -->
+                    <!-- Binding jib:build to package lifecycle -->
                     <execution>
                         <phase>package</phase>
                         <goals>
@@ -386,6 +400,59 @@
                     </execution>
                 </executions>
             </plugin>
+
+            <!-- Plugin for deploying artifacts -->
+            <plugin>
+                <artifactId>maven-deploy-plugin</artifactId>
+                <version>${maven-deploy-plugin.version}</version>
+                <configuration>
+                    <!-- Deploying artifact to the target/nexus-repo folder -->
+                    <altDeploymentRepository>
+                        internal.repo::default::file://${project.build.directory}/${github-staging-repo}
+                    </altDeploymentRepository>
+                </configuration>
+            </plugin>
+
+            <!-- Plugin for integration with GitHub -->
+            <plugin>
+                <groupId>com.github.github</groupId>
+                <artifactId>site-maven-plugin</artifactId>
+                <version>${site-maven-plugin.version}</version>
+                <configuration>
+                    <!-- Git commit message -->
+                    <message>Maven artifacts for ${project.version}</message>
+                    <!-- Disable webpage processing -->
+                    <noJekyll>true</noJekyll>
+                    <!-- Matches distribution management repository url above -->
+                    <outputDirectory>${project.build.directory}/${github-staging-repo}</outputDirectory>
+                    <!-- Remote branch (that is used as Nexus OSS repo) name -->
+                    <branch>refs/heads/${github-staging-repo}</branch>
+                    <includes>
+                        <include>**/*</include>
+                    </includes>
+                    <!-- GitHub repo name -->
+                    <repositoryName>rps</repositoryName>
+                    <!-- GitHub repo username  -->
+                    <repositoryOwner>${github.repo.username}</repositoryOwner>
+                </configuration>
+                <executions>
+                    <!-- Binding site-maven-plugin:site to deploy lifecycle -->
+                    <execution>
+                        <phase>deploy</phase>
+                        <goals>
+                            <goal>site</goal>
+                        </goals>
+                    </execution>
+                </executions>
+            </plugin>
         </plugins>
     </build>
+
+    <distributionManagement>
+        <repository>
+            <id>internal.repo</id>
+            <name>Temporary Staging Repository</name>
+            <url>file://${project.build.directory}/nexus-repo</url>
+        </repository>
+    </distributionManagement>
 </project>
