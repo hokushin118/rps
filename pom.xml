@@ -101,6 +101,7 @@
                     <plugin>
                         <groupId>org.apache.maven.plugins</groupId>
                         <artifactId>maven-deploy-plugin</artifactId>
+                        <version>${maven-deploy-plugin.version}</version>
                         <!-- For artifact deployment in the nexus-repo branch of the GitHub repository -->
                         <configuration>
                             <!-- Deploying artifact to the target/nexus-repo folder -->
@@ -127,6 +128,7 @@
                     <plugin>
                         <groupId>org.apache.maven.plugins</groupId>
                         <artifactId>maven-deploy-plugin</artifactId>
+                        <version>${maven-deploy-plugin.version}</version>
                         <!-- For artifact deployment in the nexus-repo branch of the GitHub repository -->
                         <configuration>
                             <!-- Deploying artifact to the target/nexus-repo folder -->
@@ -153,6 +155,7 @@
                     <plugin>
                         <groupId>org.apache.maven.plugins</groupId>
                         <artifactId>maven-deploy-plugin</artifactId>
+                        <version>${maven-deploy-plugin.version}</version>
                     </plugin>
                 </plugins>
             </build>
@@ -172,6 +175,7 @@
                     <plugin>
                         <groupId>org.apache.maven.plugins</groupId>
                         <artifactId>maven-deploy-plugin</artifactId>
+                        <version>${maven-deploy-plugin.version}</version>
                     </plugin>
                 </plugins>
             </build>
@@ -242,17 +246,6 @@
     <build>
         <!-- Final name of the artifact -->
         <finalName>${execjar.name}</finalName>
-
-        <pluginManagement>
-            <plugins>
-                <!-- Plugin for deploying artifacts -->
-                <plugin>
-                    <groupId>org.apache.maven.plugins</groupId>
-                    <artifactId>maven-deploy-plugin</artifactId>
-                    <version>${maven-deploy-plugin.version}</version>
-                </plugin>
-            </plugins>
-        </pluginManagement>
 
         <plugins>
             <!-- Plugin for compiling the source of the project -->
