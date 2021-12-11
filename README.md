@@ -4,8 +4,14 @@
 [![Quality Gate Status](https://sonarcloud.io/api/project_badges/measure?project=hokushin118_rps&metric=alert_status)](https://sonarcloud.io/summary/new_code?id=hokushin118_rps)
 [![Codacy Badge](https://api.codacy.com/project/badge/Grade/ae18bc7d448c4b9ab13811b1b08f6c13)](https://app.codacy.com/gh/hokushin118/rps?utm_source=github.com&utm_medium=referral&utm_content=hokushin118/rps&utm_campaign=Badge_Grade_Settings)
 ### Prerequisites
-* Java 11 or higher.
-* Maven 3.6.0 or higher.
+* Java 11 or higher
+### Technology stack
+* OpenJDK 11
+* Maven 3.6.0
+* Lombok 1.18.20
+* JUnit 5.8.2
+* Mockito 3.9.0
+* CircleCI 2.0 for CI/CD
 ### Running the RPS Game From the Command Line
 * Clone this repository:
 ```
