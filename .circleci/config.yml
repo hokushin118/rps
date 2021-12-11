@@ -90,13 +90,15 @@ commands:
   sonar-scan:
     description: "Code quality and security check with SonarQube."
     steps:
+      # Reuse the workspace from the previous job
       - attach_workspace:
-          at: ~/repo
+          at: << pipeline.parameters.workingdir >>
       - run:
           name: Scaning with Sonar
           command: |
             sudo chmod +x ./mvnw
             ./mvnw verify sonar:sonar -Dsonar.projectKey=$SONAR_PROJECT_KEY
+      # Save workspace for subsequent jobs
       - persist_to_workspace:
           root: << pipeline.parameters.workingdir >>
           paths:
@@ -105,8 +107,9 @@ commands:
   unit-test:
     description: "Runs application JUnit tests and sends the generated coverage report to Codecov."
     steps:
+      # Reuse the workspace from the previous job
       - attach_workspace:
-          at: ~/repo
+          at: << pipeline.parameters.workingdir >>
       - run:
           name: JUnit testing
           command: |
@@ -118,6 +121,7 @@ commands:
       - codecov/upload:
           file: './target/site/jacoco/jacoco.xml'
           token: $CODECAV_TOKEN
+      # Save workspace for subsequent jobs
       - persist_to_workspace:
           root: << pipeline.parameters.workingdir >>
           paths:
@@ -126,8 +130,9 @@ commands:
   publish-docker:
     description: "Creates the application Docker image and publishes it to the Docker Hub repository."
     steps:
+      # Reuse the workspace from the previous job
       - attach_workspace:
-          at: ~/repo
+          at: << pipeline.parameters.workingdir >>
       - move_settings_cmd
       - run:
           name: Creating and publishing Docker image to the Docker Hub repository with jib plugin
@@ -141,6 +146,7 @@ commands:
                                      -Dbuild.user=${CIRCLE_PROJECT_USERNAME} \
                                      -Dbuild.repo=${CIRCLE_PROJECT_REPONAME} \
                                      -Pdocker
+      # Save workspace for subsequent jobs
       - persist_to_workspace:
           root: << pipeline.parameters.workingdir >>
           paths:
@@ -149,12 +155,14 @@ commands:
   deploy-local:
     description: "Deploys generated artifact to the GitHub internal artifactory."
     steps:
+      # Reuse the workspace from the previous job
       - attach_workspace:
-          at: ~/repo
+          at: << pipeline.parameters.workingdir >>
       - move_settings_cmd
       - run:
           name: Deploying to Internal Artifactory (GitHub) with Maven Deploy plugin
           command: ./mvnw deploy
+      # Save workspace for subsequent jobs
       - persist_to_workspace:
           root: << pipeline.parameters.workingdir >>
           paths:
@@ -163,12 +171,14 @@ commands:
   deploy-github-packages:
     description: "Deploys generated artifact to the GitHub Packages repository."
     steps:
+      # Reuse the workspace from the previous job
       - attach_workspace:
-          at: ~/repo
+          at: << pipeline.parameters.workingdir >>
       - move_settings_cmd
       - run:
           name: Deploying to the GitHub Packages repository with Maven Deploy plugin
           command: ./mvnw deploy -Pgithub
+      # Save workspace for subsequent jobs
       - persist_to_workspace:
           root: << pipeline.parameters.workingdir >>
           paths:
@@ -185,6 +195,7 @@ commands:
             sudo chmod +x ./mvnw
             ./mvnw package -Pprod
       - save_cache_cmd
+      # Save workspace for subsequent jobs
       - persist_to_workspace:
           root: << pipeline.parameters.workingdir >>
           paths:
