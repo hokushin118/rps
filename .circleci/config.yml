@@ -2,6 +2,13 @@
 # See: https://circleci.com/docs/2.0/configuration-reference
 version: 2.1
 
+description: |
+  Pipeline script that:
+  1. build, test and deploy Rock Paper Scissors (RPS) application
+  2. creates and publishes RPS Docker images to the Docker Hub repository
+  3. creates GitHub releases
+  Issues & PRs: https://github.com/hokushin118/rps
+
 # We use orbs to provide some codecov tasks and shorten our config.
 # Learn more about orbs: https://circleci.com/orbs/
 orbs:
@@ -33,6 +40,12 @@ parameters:
     description: "Working directory of the application."
     type: string
     default: "~/rps"
+  release-tag-regex:
+    description: |
+      Regex that matches the SemVer (Semantic Versioning) rules.
+      https://rgxdb.com/r/40OZ1HN5
+    type: string
+    default: "/(?:0|[1-9]\d*)\.(?:0|[1-9]\d*)\.(?:0|[1-9]\d*)/"
 
 # Several steps in this config use the same, specialized steps.
 # Commands can be used to extract a common set of steps into a reusable-block.
@@ -44,6 +57,8 @@ commands:
     steps:
       - restore_cache:
           keys:
+            # Find a cache corresponding to this specific pom.xml checksum
+            # when this file is changed, this key will fail
             - v1-dependencies-{{ checksum "pom.xml" }}
             # Fallback to using the latest cache if no exact match is found
             - v1-dependencies-
@@ -84,20 +99,26 @@ commands:
   sonar-scan:
     description: "Code quality and security check with SonarQube."
     steps:
-      - checkout # check out source code to working directory
-      - restore_cache_cmd
+      # Reuse the workspace from the previous job
+      - attach_workspace:
+          at: << pipeline.parameters.workingdir >>
       - run:
           name: Scaning with Sonar
           command: |
             sudo chmod +x ./mvnw
             ./mvnw verify sonar:sonar -Dsonar.projectKey=$SONAR_PROJECT_KEY
-      - save_cache_cmd
+      # Save workspace for subsequent jobs
+      - persist_to_workspace:
+          root: << pipeline.parameters.workingdir >>
+          paths:
+            - .
 
   unit-test:
     description: "Runs application JUnit tests and sends the generated coverage report to Codecov."
     steps:
-      - checkout # check out source code to working directory
-      - restore_cache_cmd
+      # Reuse the workspace from the previous job
+      - attach_workspace:
+          at: << pipeline.parameters.workingdir >>
       - run:
           name: JUnit testing
           command: |
@@ -109,13 +130,18 @@ commands:
       - codecov/upload:
           file: './target/site/jacoco/jacoco.xml'
           token: $CODECAV_TOKEN
-      - save_cache_cmd
+      # Save workspace for subsequent jobs
+      - persist_to_workspace:
+          root: << pipeline.parameters.workingdir >>
+          paths:
+            - .
 
   publish-docker:
     description: "Creates the application Docker image and publishes it to the Docker Hub repository."
     steps:
-      - checkout # check out source code to working directory
-      - restore_cache_cmd
+      # Reuse the workspace from the previous job
+      - attach_workspace:
+          at: << pipeline.parameters.workingdir >>
       - move_settings_cmd
       - run:
           name: Creating and publishing Docker image to the Docker Hub repository with jib plugin
@@ -129,32 +155,59 @@ commands:
                                      -Dbuild.user=${CIRCLE_PROJECT_USERNAME} \
                                      -Dbuild.repo=${CIRCLE_PROJECT_REPONAME} \
                                      -Pdocker
-      - save_cache_cmd
+      # Save workspace for subsequent jobs
+      - persist_to_workspace:
+          root: << pipeline.parameters.workingdir >>
+          paths:
+            - .
 
   deploy-local:
     description: "Deploys generated artifact to the GitHub internal artifactory."
     steps:
-      - checkout # check out source code to working directory
-      - restore_cache_cmd
+      # Reuse the workspace from the previous job
+      - attach_workspace:
+          at: << pipeline.parameters.workingdir >>
       - move_settings_cmd
       - run:
           name: Deploying to Internal Artifactory (GitHub) with Maven Deploy plugin
           command: ./mvnw deploy
-      - save_cache_cmd
+      # Save workspace for subsequent jobs
+      - persist_to_workspace:
+          root: << pipeline.parameters.workingdir >>
+          paths:
+            - .
 
   deploy-github-packages:
     description: "Deploys generated artifact to the GitHub Packages repository."
     steps:
-      - checkout # check out source code to working directory
-      - restore_cache_cmd
+      # Reuse the workspace from the previous job
+      - attach_workspace:
+          at: << pipeline.parameters.workingdir >>
       - move_settings_cmd
       - run:
           name: Deploying to the GitHub Packages repository with Maven Deploy plugin
           command: ./mvnw deploy -Pgithub
-      - save_cache_cmd
+      # Save workspace for subsequent jobs
+      - persist_to_workspace:
+          root: << pipeline.parameters.workingdir >>
+          paths:
+            - .
 
-  build:
-    description: "Builds and packages the application."
+  release-github-packages:
+    description: "Publishes application Releases on GitHub repository."
+    steps:
+      # Reuse the workspace from the previous job
+      - attach_workspace:
+          at: << pipeline.parameters.workingdir >>
+      - run:
+          name: Preparing Release
+          command: ./mvnw --batch-mode release:prepare -s ~/.m2/settings.xml
+      - run:
+          name: Performing Release
+          command: ./mvnw --batch-mode release:perform -s ~/.m2/settings.xml
+
+  checkout-and-build:
+    description: "Checkout repository and builds and packages the application."
     steps:
       - checkout # check out source code to working directory
       - restore_cache_cmd
@@ -162,10 +215,15 @@ commands:
           name: Packaging application
           command: |
             sudo chmod +x ./mvnw
-            ./mvnw package -Pprod
+            ./mvnw clean package -Pprod
       - save_cache_cmd
+      # Save workspace for subsequent jobs
+      - persist_to_workspace:
+          root: << pipeline.parameters.workingdir >>
+          paths:
+            - .
 
-# Define a job to be invoked later in a workflow.
+# Define a job (a building block of CI/CD pipeline) to be invoked later in a workflow.
 # See: https://circleci.com/docs/2.0/configuration-reference/#jobs
 jobs:
   # Specify the execution environment. You can specify an image from Dockerhub or use one of our Convenience Images from CircleCI's Developer Hub.
@@ -174,7 +232,7 @@ jobs:
     executor: docker-executor
     working_directory: << pipeline.parameters.workingdir >>
     steps:
-      - build
+      - checkout-and-build
 
   unit-test-with-docker:
     executor: docker-executor
@@ -197,12 +255,18 @@ jobs:
     steps:
       - deploy-github-packages
 
+  release-with-docker:
+    executor: docker-executor
+    working_directory: << pipeline.parameters.workingdir >>
+    steps:
+      - release-github-packages
+
   build-with-linux-machine:
     executor: linux-machine-executor
     working_directory: << pipeline.parameters.workingdir >>
     steps:
       - install_jdk_cmd
-      - build
+      - checkout-and-build
 
   unit-test-with-linux-machine:
     executor: linux-machine-executor
@@ -225,6 +289,12 @@ jobs:
     steps:
       - install_jdk_cmd
       - deploy-github-packages
+
+  release-with-linux-machine:
+    executor: linux-machine-executor
+    working_directory: << pipeline.parameters.workingdir >>
+    steps:
+      - release-github-packages
 
 # Invoke jobs via workflows
 # See: https://circleci.com/docs/2.0/configuration-reference/#workflows
@@ -254,6 +324,9 @@ workflows:
             branches:
               # Only master branch gets published
               only: /^(<< pipeline.parameters.main-repo-branch >>)$/
+            tags:
+              # Only when a git tag is pushed
+              only: << pipeline.parameters.release-tag-regex >>
       - deploy-with-docker:
           requires:
             - publish-with-docker
@@ -261,6 +334,19 @@ workflows:
             branches:
               # Only master branch gets deployed
               only: /^(<< pipeline.parameters.main-repo-branch >>)$/
+            tags:
+              # Only when a git tag is pushed
+              only: << pipeline.parameters.release-tag-regex >>
+      - release-with-docker:
+          requires:
+            - publish-with-docker
+          filters:
+            branches:
+              # Only master branch gets deployed
+              only: /^(<< pipeline.parameters.main-repo-branch >>)$/
+            tags:
+              # Only when a git tag is pushed
+              only: << pipeline.parameters.release-tag-regex >>
 
   # This job is responsible for building, testing, deploying of the application on Linux machine.
   # It also creates the application Docker image and publishes it in the Docker Hub repository.
@@ -287,6 +373,9 @@ workflows:
             branches:
               # Only master branch gets published
               only: /^(<< pipeline.parameters.main-repo-branch >>)$/
+            tags:
+              # Only when a git tag is pushed
+              only: << pipeline.parameters.release-tag-regex >>
       - deploy-with-linux-machine:
           requires:
             - publish-with-linux-machine
@@ -294,3 +383,16 @@ workflows:
             branches:
               # Only master branch gets deployed
               only: /^(<< pipeline.parameters.main-repo-branch >>)$/
+            tags:
+              # Only when a git tag is pushed
+              only: << pipeline.parameters.release-tag-regex >>
+      - release-with-linux-machine:
+          requires:
+            - publish-with-docker
+          filters:
+            branches:
+              # Only master branch gets deployed
+              only: /^(<< pipeline.parameters.main-repo-branch >>)$/
+            tags:
+              # Only when a git tag is pushed
+              only: << pipeline.parameters.release-tag-regex >>
