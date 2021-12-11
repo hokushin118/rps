@@ -95,6 +95,22 @@
                 <jib.skip>true</jib.skip>
                 <site-maven-plugin.skip>false</site-maven-plugin.skip>
             </properties>
+            <build>
+                <plugins>
+                    <!-- Plugin for deploying artifacts -->
+                    <plugin>
+                        <groupId>org.apache.maven.plugins</groupId>
+                        <artifactId>maven-deploy-plugin</artifactId>
+                        <!-- For artifact deployment in the nexus-repo branch of the GitHub repository -->
+                        <configuration>
+                            <!-- Deploying artifact to the target/nexus-repo folder -->
+                            <altDeploymentRepository>
+                                internal.repo::default::file://${project.build.directory}/${github-staging-repo}
+                            </altDeploymentRepository>
+                        </configuration>
+                    </plugin>
+                </plugins>
+            </build>
         </profile>
         <!-- Profile for running application on production environment -->
         <profile>
@@ -105,6 +121,22 @@
                 <jib.skip>true</jib.skip>
                 <site-maven-plugin.skip>false</site-maven-plugin.skip>
             </properties>
+            <build>
+                <plugins>
+                    <!-- Plugin for deploying artifacts -->
+                    <plugin>
+                        <groupId>org.apache.maven.plugins</groupId>
+                        <artifactId>maven-deploy-plugin</artifactId>
+                        <!-- For artifact deployment in the nexus-repo branch of the GitHub repository -->
+                        <configuration>
+                            <!-- Deploying artifact to the target/nexus-repo folder -->
+                            <altDeploymentRepository>
+                                internal.repo::default::file://${project.build.directory}/${github-staging-repo}
+                            </altDeploymentRepository>
+                        </configuration>
+                    </plugin>
+                </plugins>
+            </build>
         </profile>
         <!-- Profile for deploying artifacts to the Docker Hub repository -->
         <profile>
@@ -115,6 +147,15 @@
                 <jib.skip>false</jib.skip>
                 <site-maven-plugin.skip>true</site-maven-plugin.skip>
             </properties>
+            <build>
+                <plugins>
+                    <!-- Plugin for deploying artifacts -->
+                    <plugin>
+                        <groupId>org.apache.maven.plugins</groupId>
+                        <artifactId>maven-deploy-plugin</artifactId>
+                    </plugin>
+                </plugins>
+            </build>
         </profile>
         <!-- Profile for deploying artifacts to the GitHub Packages repository -->
         <profile>
@@ -125,6 +166,15 @@
                 <jib.skip>true</jib.skip>
                 <site-maven-plugin.skip>true</site-maven-plugin.skip>
             </properties>
+            <build>
+                <plugins>
+                    <!-- Plugin for deploying artifacts -->
+                    <plugin>
+                        <groupId>org.apache.maven.plugins</groupId>
+                        <artifactId>maven-deploy-plugin</artifactId>
+                    </plugin>
+                </plugins>
+            </build>
             <!--
             For artifact deployment in the GitHub Packages repository
             https://docs.github.com/en/packages/learn-github-packages/introduction-to-github-packages
@@ -192,6 +242,17 @@
     <build>
         <!-- Final name of the artifact -->
         <finalName>${execjar.name}</finalName>
+
+        <pluginManagement>
+            <plugins>
+                <!-- Plugin for deploying artifacts -->
+                <plugin>
+                    <groupId>org.apache.maven.plugins</groupId>
+                    <artifactId>maven-deploy-plugin</artifactId>
+                    <version>${maven-deploy-plugin.version}</version>
+                </plugin>
+            </plugins>
+        </pluginManagement>
 
         <plugins>
             <!-- Plugin for compiling the source of the project -->
@@ -435,19 +496,6 @@
                         </goals>
                     </execution>
                 </executions>
-            </plugin>
-
-            <!-- Plugin for deploying artifacts -->
-            <plugin>
-                <artifactId>maven-deploy-plugin</artifactId>
-                <version>${maven-deploy-plugin.version}</version>
-                <!-- For artifact deployment in the nexus-repo branch of the GitHub repository -->
-                <!--                <configuration>-->
-                <!--                    &lt;!&ndash; Deploying artifact to the target/nexus-repo folder &ndash;&gt;-->
-                <!--                    <altDeploymentRepository>-->
-                <!--                        internal.repo::default::file://${project.build.directory}/${github-staging-repo}-->
-                <!--                    </altDeploymentRepository>-->
-                <!--                </configuration>-->
             </plugin>
 
             <!-- Plugin for integration with GitHub -->

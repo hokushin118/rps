@@ -131,7 +131,7 @@ commands:
                                      -Pdocker
       - save_cache_cmd
 
-  deploy:
+  deploy-local:
     description: "Deploys generated artifact to the GitHub internal artifactory."
     steps:
       - checkout # check out source code to working directory
