@@ -83,6 +83,7 @@
     </properties>
 
     <profiles>
+        <!-- Profile for running application on development environment -->
         <profile>
             <id>dev</id>
             <activation>
@@ -92,23 +93,49 @@
                 <maven.test.skip>false</maven.test.skip>
                 <jacoco.skip>false</jacoco.skip>
                 <jib.skip>true</jib.skip>
+                <site-maven-plugin.skip>false</site-maven-plugin.skip>
             </properties>
         </profile>
+        <!-- Profile for running application on production environment -->
         <profile>
             <id>prod</id>
             <properties>
                 <maven.test.skip>true</maven.test.skip>
                 <jacoco.skip>true</jacoco.skip>
                 <jib.skip>true</jib.skip>
+                <site-maven-plugin.skip>false</site-maven-plugin.skip>
             </properties>
         </profile>
+        <!-- Profile for deploying artifacts to the Docker Hub repository -->
         <profile>
             <id>docker</id>
             <properties>
                 <maven.test.skip>true</maven.test.skip>
                 <jacoco.skip>true</jacoco.skip>
                 <jib.skip>false</jib.skip>
+                <site-maven-plugin.skip>true</site-maven-plugin.skip>
             </properties>
+        </profile>
+        <!-- Profile for deploying artifacts to the GitHub Packages repository -->
+        <profile>
+            <id>github</id>
+            <properties>
+                <maven.test.skip>true</maven.test.skip>
+                <jacoco.skip>true</jacoco.skip>
+                <jib.skip>true</jib.skip>
+                <site-maven-plugin.skip>true</site-maven-plugin.skip>
+            </properties>
+            <!--
+            For artifact deployment in the GitHub Packages repository
+            https://docs.github.com/en/packages/learn-github-packages/introduction-to-github-packages
+            -->
+            <distributionManagement>
+                <repository>
+                    <id>github</id>
+                    <name>GitHub Packages</name>
+                    <url>https://maven.pkg.github.com/hokushin118/rps</url>
+                </repository>
+            </distributionManagement>
         </profile>
     </profiles>
 
@@ -414,12 +441,13 @@
             <plugin>
                 <artifactId>maven-deploy-plugin</artifactId>
                 <version>${maven-deploy-plugin.version}</version>
-                <configuration>
-                    <!-- Deploying artifact to the target/nexus-repo folder -->
-                    <altDeploymentRepository>
-                        internal.repo::default::file://${project.build.directory}/${github-staging-repo}
-                    </altDeploymentRepository>
-                </configuration>
+                <!-- For artifact deployment in the nexus-repo branch of the GitHub repository -->
+                <!--                <configuration>-->
+                <!--                    &lt;!&ndash; Deploying artifact to the target/nexus-repo folder &ndash;&gt;-->
+                <!--                    <altDeploymentRepository>-->
+                <!--                        internal.repo::default::file://${project.build.directory}/${github-staging-repo}-->
+                <!--                    </altDeploymentRepository>-->
+                <!--                </configuration>-->
             </plugin>
 
             <!-- Plugin for integration with GitHub -->
@@ -428,6 +456,7 @@
                 <artifactId>site-maven-plugin</artifactId>
                 <version>${site-maven-plugin.version}</version>
                 <configuration>
+                    <skip>${site-maven-plugin.skip}</skip>
                     <!-- Git commit message -->
                     <message>Maven artifacts for ${project.version}</message>
                     <!-- Disable webpage processing -->
@@ -460,11 +489,15 @@
         </plugins>
     </build>
 
+    <!--
+    For artifact deployment in the nexus-repo branch of the GitHub repository
+    mvn deploy
+    -->
     <distributionManagement>
         <repository>
             <id>internal.repo</id>
             <name>Temporary Staging Repository</name>
-            <url>file://${project.build.directory}/nexus-repo</url>
+            <url>file://${project.build.directory}/${github.repo.username}</url>
         </repository>
     </distributionManagement>
 </project>
