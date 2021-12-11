@@ -162,7 +162,7 @@ commands:
           name: Packaging application
           command: |
             sudo chmod +x ./mvnw
-            ./mvnw -Dmaven.test.skip=true package
+            ./mvnw package -Pprod
       - save_cache_cmd
 
 # Define a job to be invoked later in a workflow.
