@@ -2,19 +2,54 @@
 # See: https://circleci.com/docs/2.0/configuration-reference
 version: 2.1
 
+# We use orbs to provide some codecov tasks and shorten our config.
+# Learn more about orbs: https://circleci.com/orbs/
 orbs:
   codecov: codecov/codecov@1.0.2
 
+# An executor defines the underlying technology or environment in which to run a job.
+executors:
+  docker-executor:
+    docker:
+      # with this image as the primary container; this is where all `steps` will run
+      - image: circleci/openjdk:11-jdk
+  linux-machine-executor:
+    machine:
+      # recommended linux image - includes Ubuntu 20.04, docker 19.03.13, docker-compose 1.27.4
+      image: ubuntu-2004:202010-01
+
+# Pipeline Parameters
+## These parameters are used internally.
+parameters:
+  main-repo-branch:
+    description: "Name of the master branch of the application."
+    type: string
+    default: "master"
+  nexus-repo-branch:
+    description: "Name of the branch used for storing artifacts."
+    type: string
+    default: "nexus-repo"
+  workingdir:
+    description: "Working directory of the application."
+    type: string
+    default: "~/rps"
+
+# Several steps in this config use the same, specialized steps.
+# Commands can be used to extract a common set of steps into a reusable-block.
+# In this case, whenever you see `- restore_cache_cmd` as a "step" in the config below,
+# It is executing a command to restore_cache.
 commands:
   restore_cache_cmd:
+    description: "Runs restore cache steps."
     steps:
       - restore_cache:
           keys:
             - v1-dependencies-{{ checksum "pom.xml" }}
-            # fallback to using the latest cache if no exact match is found
+            # Fallback to using the latest cache if no exact match is found
             - v1-dependencies-
 
   save_cache_cmd:
+    description: "Runs save cache steps."
     steps:
       - save_cache:
           paths:
@@ -22,6 +57,9 @@ commands:
           key: v1-dependencies-{{ checksum "pom.xml" }}
 
   move_settings_cmd:
+    description: |
+      Creates settings-security.xml file with master password in the ~/.m2 folder and
+      moves settings.xml file to the ~/.m2 folder.
     steps:
       - run:
           name: Moving settings.xml and settings-security.xml files to ~/.m2 folder
@@ -33,6 +71,7 @@ commands:
             echo "<settingsSecurity><master>${MAVEN_SECURITY_PASSWORD}</master></settingsSecurity>" > ~/.m2/settings-security.xml
 
   install_jdk_cmd:
+    description: "Installs JDK 11 on Linux machine."
     steps:
       - run:
           name: Installing OpenJDK 11
@@ -43,6 +82,7 @@ commands:
             java -version
 
   sonar-scan:
+    description: "Code quality and security check with SonarQube."
     steps:
       - checkout # check out source code to working directory
       - restore_cache_cmd
@@ -54,6 +94,7 @@ commands:
       - save_cache_cmd
 
   unit-test:
+    description: "Runs application JUnit tests and sends the generated coverage report to Codecov."
     steps:
       - checkout # check out source code to working directory
       - restore_cache_cmd
@@ -64,12 +105,14 @@ commands:
             ./mvnw test
       - store_artifacts:
           path: target
+      # Uploading generated jacoco code coverage report to codecov
       - codecov/upload:
           file: './target/site/jacoco/jacoco.xml'
           token: $CODECAV_TOKEN
       - save_cache_cmd
 
   publish-docker:
+    description: "Creates the application Docker image and publishes it to the Docker Hub repository."
     steps:
       - checkout # check out source code to working directory
       - restore_cache_cmd
@@ -89,6 +132,7 @@ commands:
       - save_cache_cmd
 
   deploy:
+    description: "Deploys generated artifact to the GitHub internal artifactory."
     steps:
       - checkout # check out source code to working directory
       - restore_cache_cmd
@@ -98,9 +142,21 @@ commands:
           command: ./mvnw deploy
       - save_cache_cmd
 
-  build:
+  deploy-github-packages:
+    description: "Deploys generated artifact to the GitHub Packages repository."
     steps:
-      - checkout
+      - checkout # check out source code to working directory
+      - restore_cache_cmd
+      - move_settings_cmd
+      - run:
+          name: Deploying to the GitHub Packages repository with Maven Deploy plugin
+          command: ./mvnw deploy -Pgithub
+      - save_cache_cmd
+
+  build:
+    description: "Builds and packages the application."
+    steps:
+      - checkout # check out source code to working directory
       - restore_cache_cmd
       - run:
           name: Packaging application
@@ -109,14 +165,6 @@ commands:
             ./mvnw -Dmaven.test.skip=true package
       - save_cache_cmd
 
-executors:
-  docker-executor:
-    docker:
-      - image: circleci/openjdk:11-jdk # with this image as the primary container; this is where all `steps` will run
-  machine-executor:
-    machine:
-      image: ubuntu-1604:201903-01
-
 # Define a job to be invoked later in a workflow.
 # See: https://circleci.com/docs/2.0/configuration-reference/#jobs
 jobs:
@@ -124,11 +172,13 @@ jobs:
   # See: https://circleci.com/docs/2.0/configuration-reference/#docker-machine-macos-windows-executor
   build-with-docker:
     executor: docker-executor
+    working_directory: << pipeline.parameters.workingdir >>
     steps:
       - build
 
   unit-test-with-docker:
     executor: docker-executor
+    working_directory: << pipeline.parameters.workingdir >>
     # Add steps to the job
     # See: https://circleci.com/docs/2.0/configuration-reference/#steps
     steps:
@@ -137,94 +187,110 @@ jobs:
 
   publish-with-docker:
     executor: docker-executor
+    working_directory: << pipeline.parameters.workingdir >>
     steps:
       - publish-docker
 
   deploy-with-docker:
     executor: docker-executor
+    working_directory: << pipeline.parameters.workingdir >>
     steps:
-      - deploy
+      - deploy-github-packages
 
-  build-with-machine:
-    executor: machine-executor
+  build-with-linux-machine:
+    executor: linux-machine-executor
+    working_directory: << pipeline.parameters.workingdir >>
     steps:
       - install_jdk_cmd
       - build
 
-  unit-test-with-machine:
-    executor: machine-executor
+  unit-test-with-linux-machine:
+    executor: linux-machine-executor
+    working_directory: << pipeline.parameters.workingdir >>
     steps:
       - install_jdk_cmd
       - unit-test
       - sonar-scan
 
-  publish-with-machine:
-    executor: machine-executor
+  publish-with-linux-machine:
+    executor: linux-machine-executor
+    working_directory: << pipeline.parameters.workingdir >>
     steps:
       - install_jdk_cmd
       - publish-docker
 
-  deploy-with-machine:
-    executor: machine-executor
+  deploy-with-linux-machine:
+    executor: linux-machine-executor
+    working_directory: << pipeline.parameters.workingdir >>
     steps:
       - install_jdk_cmd
-      - deploy
+      - deploy-github-packages
 
 # Invoke jobs via workflows
 # See: https://circleci.com/docs/2.0/configuration-reference/#workflows
 workflows:
+  # This job is responsible for building, testing, deploying of the application on Docker container.
+  # It also creates the application Docker image and publishes it in the Docker Hub repository.
   build-test-deploy-with-docker:
     jobs:
       - build-with-docker:
           filters:
             branches:
-              ignore: nexus-repo
+              # Ignore nexus-repo branch
+              ignore: << pipeline.parameters.nexus-repo-branch >>
       - unit-test-with-docker:
           requires:
             - build-with-docker
+          # execute the job in SonarCloud security context
           context: SonarCloud
           filters:
             branches:
-              ignore: nexus-repo
+              # Ignore nexus-repo branch
+              ignore: << pipeline.parameters.nexus-repo-branch >>
       - publish-with-docker:
           requires:
             - unit-test-with-docker
           filters:
             branches:
               # Only master branch gets published
-              only: /^(master)$/
+              only: /^(<< pipeline.parameters.main-repo-branch >>)$/
       - deploy-with-docker:
           requires:
             - publish-with-docker
           filters:
             branches:
               # Only master branch gets deployed
-              only: /^(master)$/
+              only: /^(<< pipeline.parameters.main-repo-branch >>)$/
 
-  build-test-deploy-with-machine:
+  # This job is responsible for building, testing, deploying of the application on Linux machine.
+  # It also creates the application Docker image and publishes it in the Docker Hub repository.
+  build-test-deploy-with-linux-machine:
     jobs:
-      - build-with-machine:
+      - build-with-linux-machine:
           filters:
             branches:
-              ignore: nexus-repo
-      - unit-test-with-machine:
+              # Ignore nexus-repo branch
+              ignore: << pipeline.parameters.nexus-repo-branch >>
+      - unit-test-with-linux-machine:
           requires:
-            - build-with-machine
+            - build-with-linux-machine
+          # execute the job in SonarCloud security context
           context: SonarCloud
           filters:
             branches:
-              ignore: nexus-repo
-      - publish-with-machine:
+              # Ignore nexus-repo branch
+              ignore: << pipeline.parameters.nexus-repo-branch >>
+      - publish-with-linux-machine:
           requires:
-            - unit-test-with-machine
+            - unit-test-with-linux-machine
           filters:
             branches:
               # Only master branch gets published
-              only: /^(master)$/
-      - deploy-with-machine:
+              only: /^(<< pipeline.parameters.main-repo-branch >>)$/
+      - deploy-with-linux-machine:
           requires:
-            - publish-with-machine
+            - publish-with-linux-machine
           filters:
             branches:
               # Only master branch gets deployed
-              only: /^(master)$/
+              only: /^(<< pipeline.parameters.main-repo-branch >>)$/
