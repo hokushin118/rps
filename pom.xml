@@ -552,7 +552,7 @@
                     <preparationGoals>clean verify</preparationGoals>
                     <releaseProfiles>github</releaseProfiles>
                     <checkModificationExcludes>
-                        <checkModificationExclude>pom.xml</checkModificationExclude>
+                        <checkModificationExclude>mvnw</checkModificationExclude>
                     </checkModificationExcludes>
                 </configuration>
             </plugin>
