@@ -308,7 +308,7 @@ workflows:
               # Ignore nexus-repo branch
               ignore: << pipeline.parameters.nexus-repo-branch >>
 
-      - deploy-release-with-linux-machine:
+      - publish-deploy-release-with-linux-machine:
           requires:
             - unit-test-with-linux-machine
           filters:
