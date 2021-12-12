@@ -248,7 +248,7 @@ jobs:
       - unit-test
       - sonar-scan
 
-  deploy-release-with-linux-machine:
+  publish-deploy-release-with-linux-machine:
     executor: linux-machine-executor
     working_directory: << pipeline.parameters.workingdir >>
     steps:
