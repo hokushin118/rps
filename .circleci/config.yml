@@ -272,7 +272,6 @@ jobs:
     executor: linux-machine-executor
     working_directory: << pipeline.parameters.workingdir >>
     steps:
-      - install_jdk_cmd
       - unit-test
       - sonar-scan
 
@@ -280,14 +279,12 @@ jobs:
     executor: linux-machine-executor
     working_directory: << pipeline.parameters.workingdir >>
     steps:
-      - install_jdk_cmd
       - publish-docker
 
   deploy-with-linux-machine:
     executor: linux-machine-executor
     working_directory: << pipeline.parameters.workingdir >>
     steps:
-      - install_jdk_cmd
       - deploy-github-packages
 
   release-with-linux-machine:
