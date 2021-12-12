@@ -551,6 +551,9 @@
                     <!-- Tasks to be run before creating tag -->
                     <preparationGoals>clean verify</preparationGoals>
                     <releaseProfiles>github</releaseProfiles>
+                    <checkModificationExcludes>
+                        <checkModificationExclude>pom.xml</checkModificationExclude>
+                    </checkModificationExcludes>
                 </configuration>
             </plugin>
         </plugins>
