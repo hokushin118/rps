@@ -46,7 +46,7 @@ parameters:
       https://rgxdb.com/r/40OZ1HN5
     type: string
     default: |
-      /(?<=^[Vv]|^)(?:(?<major>(?:0|[1-9](?:(?:0|[1-9])+)*))[.](?<minor>(?:0|[1-9](?:(?:0|[1-9])+)*))[.](?<patch>(?:0|[1-9](?:(?:0|[1-9])+)*))(?:-(?<prerelease>(?:(?:(?:[A-Za-z]|-)(?:(?:(?:0|[1-9])|(?:[A-Za-z]|-))+)?|(?:(?:(?:0|[1-9])|(?:[A-Za-z]|-))+)(?:[A-Za-z]|-)(?:(?:(?:0|[1-9])|(?:[A-Za-z]|-))+)?)|(?:0|[1-9](?:(?:0|[1-9])+)*))(?:[.](?:(?:(?:[A-Za-z]|-)(?:(?:(?:0|[1-9])|(?:[A-Za-z]|-))+)?|(?:(?:(?:0|[1-9])|(?:[A-Za-z]|-))+)(?:[A-Za-z]|-)(?:(?:(?:0|[1-9])|(?:[A-Za-z]|-))+)?)|(?:0|[1-9](?:(?:0|[1-9])+)*)))*))?(?:[+](?<build>(?:(?:(?:[A-Za-z]|-)(?:(?:(?:0|[1-9])|(?:[A-Za-z]|-))+)?|(?:(?:(?:0|[1-9])|(?:[A-Za-z]|-))+)(?:[A-Za-z]|-)(?:(?:(?:0|[1-9])|(?:[A-Za-z]|-))+)?)|(?:(?:0|[1-9])+))(?:[.](?:(?:(?:[A-Za-z]|-)(?:(?:(?:0|[1-9])|(?:[A-Za-z]|-))+)?|(?:(?:(?:0|[1-9])|(?:[A-Za-z]|-))+)(?:[A-Za-z]|-)(?:(?:(?:0|[1-9])|(?:[A-Za-z]|-))+)?)|(?:(?:0|[1-9])+)))*))?)$/
+      /(?:0|[1-9]\d*)\.(?:0|[1-9]\d*)\.(?:0|[1-9]\d*)/
 
 # Several steps in this config use the same, specialized steps.
 # Commands can be used to extract a common set of steps into a reusable-block.
@@ -194,7 +194,7 @@ commands:
           paths:
             - .
 
-  publish-github-release:
+  release-github-packages:
     description: "Publishes application Releases on GitHub repository."
     steps:
       # Reuse the workspace from the previous job
@@ -256,6 +256,12 @@ jobs:
     steps:
       - deploy-github-packages
 
+  release-with-docker:
+    executor: docker-executor
+    working_directory: << pipeline.parameters.workingdir >>
+    steps:
+      - release-github-packages
+
   build-with-linux-machine:
     executor: linux-machine-executor
     working_directory: << pipeline.parameters.workingdir >>
@@ -285,6 +291,12 @@ jobs:
       - install_jdk_cmd
       - deploy-github-packages
 
+  release-with-linux-machine:
+    executor: linux-machine-executor
+    working_directory: << pipeline.parameters.workingdir >>
+    steps:
+      - release-github-packages
+
 # Invoke jobs via workflows
 # See: https://circleci.com/docs/2.0/configuration-reference/#workflows
 workflows:
@@ -310,6 +322,9 @@ workflows:
           requires:
             - unit-test-with-docker
           filters:
+            tags:
+              # Only when a git tag is pushed
+              only: << pipeline.parameters.release-tag-regex >>
             branches:
               # Only master branch gets published
               only: /^(<< pipeline.parameters.main-repo-branch >>)$/
@@ -318,8 +333,21 @@ workflows:
               only: << pipeline.parameters.release-tag-regex >>
       - deploy-with-docker:
           requires:
-            - publish-with-docker
+            - unit-test-with-docker
           filters:
+            tags:
+              # Only when a git tag is pushed
+              only: << pipeline.parameters.release-tag-regex >>
+            branches:
+              # Only master branch gets deployed
+              only: /^(<< pipeline.parameters.main-repo-branch >>)$/
+      - release-with-docker:
+          requires:
+            - unit-test-with-docker
+          filters:
+            tags:
+              # Only when a git tag is pushed
+              only: << pipeline.parameters.release-tag-regex >>
             branches:
               # Only master branch gets deployed
               only: /^(<< pipeline.parameters.main-repo-branch >>)$/
@@ -349,6 +377,9 @@ workflows:
           requires:
             - unit-test-with-linux-machine
           filters:
+            tags:
+              # Only when a git tag is pushed
+              only: << pipeline.parameters.release-tag-regex >>
             branches:
               # Only master branch gets published
               only: /^(<< pipeline.parameters.main-repo-branch >>)$/
@@ -357,8 +388,21 @@ workflows:
               only: << pipeline.parameters.release-tag-regex >>
       - deploy-with-linux-machine:
           requires:
-            - publish-with-linux-machine
+            - unit-test-with-linux-machine
           filters:
+            tags:
+              # Only when a git tag is pushed
+              only: << pipeline.parameters.release-tag-regex >>
+            branches:
+              # Only master branch gets deployed
+              only: /^(<< pipeline.parameters.main-repo-branch >>)$/
+      - release-with-linux-machine:
+          requires:
+            - unit-test-with-linux-machine
+          filters:
+            tags:
+              # Only when a git tag is pushed
+              only: << pipeline.parameters.release-tag-regex >>
             branches:
               # Only master branch gets deployed
               only: /^(<< pipeline.parameters.main-repo-branch >>)$/
