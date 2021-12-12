@@ -184,7 +184,7 @@ commands:
           at: << pipeline.parameters.workingdir >>
       - run:
           name: Deploying to the GitHub Packages repository with Maven Deploy plugin
-          command: ./mvnw deploy -s ~/.m2/settings.xml -Pgithub
+          command: ./mvnw deploy -Pgithub
       # Save workspace for subsequent jobs
       - persist_to_workspace:
           root: << pipeline.parameters.workingdir >>
@@ -199,10 +199,10 @@ commands:
           at: << pipeline.parameters.workingdir >>
       - run:
           name: Preparing Release
-          command: ./mvnw --batch-mode release:prepare -s ~/.m2/settings.xml
+          command: ./mvnw --batch-mode release:prepare
       - run:
           name: Performing Release
-          command: ./mvnw --batch-mode release:perform -s ~/.m2/settings.xml
+          command: ./mvnw --batch-mode release:perform
 
   checkout-and-build:
     description: "Checkout repository and builds and packages the application."
