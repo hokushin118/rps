@@ -340,6 +340,7 @@ workflows:
 
       - release-with-docker:
           requires:
+            - unit-test-with-docker
             - publish-with-docker
             - deploy-with-docker
           filters:
@@ -394,7 +395,6 @@ workflows:
 
       - release-with-linux-machine:
           requires:
-            - unit-test-with-linux-machine
             - publish-with-linux-machine
             - deploy-with-linux-machine
           filters:
