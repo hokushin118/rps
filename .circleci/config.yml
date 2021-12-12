@@ -198,6 +198,10 @@ commands:
       # Reuse the workspace from the previous job
       - attach_workspace:
           at: << pipeline.parameters.workingdir >>
+      - move_settings_cmd
+      - run:
+          name: Deploying to the GitHub Packages repository with Maven Deploy plugin
+          command: ./mvnw deploy -s ~/.m2/settings.xml -Pgithub
       - run:
           name: Preparing Release
           command: ./mvnw --batch-mode release:prepare
