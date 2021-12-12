@@ -137,30 +137,6 @@ commands:
           paths:
             - .
 
-  publish-docker:
-    description: "Creates the application Docker image and publishes it to the Docker Hub repository."
-    steps:
-      # Reuse the workspace from the previous job
-      - attach_workspace:
-          at: << pipeline.parameters.workingdir >>
-      - run:
-          name: Creating and publishing Docker image to the Docker Hub repository with jib plugin
-          command: |
-            ./mvnw compile jib:build -Djib.to.auth.username=${DOCKER_HUB_ID} \
-                                     -Djib.to.auth.password=${RPS_DOCKER_HUB_TOKEN} \
-                                     -B -DskipTests=true \
-                                     -Dbuild.number=${CIRCLE_BUILD_NUM} \
-                                     -Dcommit.hash=${CIRCLE_SHA1} \
-                                     -Dcircle.workflow.guid=${CIRCLE_WORKFLOW_ID} \
-                                     -Dbuild.user=${CIRCLE_PROJECT_USERNAME} \
-                                     -Dbuild.repo=${CIRCLE_PROJECT_REPONAME} \
-                                     -Pdocker
-      # Save workspace for subsequent jobs
-      - persist_to_workspace:
-          root: << pipeline.parameters.workingdir >>
-          paths:
-            - .
-
   deploy-local:
     description: "Deploys generated artifact to the GitHub internal artifactory."
     steps:
@@ -176,8 +152,9 @@ commands:
           paths:
             - .
 
-  deploy-release-github-packages:
+  publish-deploy-release-github-packages:
     description: |
+      Creates the application Docker image and publishes it to the Docker Hub repository.
       Deploys generated artifact to the GitHub Packages repository.
       Publishes application Releases on GitHub repository.
     steps:
@@ -186,6 +163,18 @@ commands:
           at: << pipeline.parameters.workingdir >>
       - move_settings_cmd
       - run:
+          name: Creating and publishing Docker image to the Docker Hub repository with jib plugin
+          command: |
+            ./mvnw compile jib:build -Djib.to.auth.username=${DOCKER_HUB_ID} \
+                                     -Djib.to.auth.password=${RPS_DOCKER_HUB_TOKEN} \
+                                     -B -DskipTests=true \
+                                     -Dbuild.number=${CIRCLE_BUILD_NUM} \
+                                     -Dcommit.hash=${CIRCLE_SHA1} \
+                                     -Dcircle.workflow.guid=${CIRCLE_WORKFLOW_ID} \
+                                     -Dbuild.user=${CIRCLE_PROJECT_USERNAME} \
+                                     -Dbuild.repo=${CIRCLE_PROJECT_REPONAME} \
+                                     -Pdocker
+      - run:
           name: Deploying to the GitHub Packages repository with Maven Deploy plugin
           command: ./mvnw deploy -s ~/.m2/settings.xml -Pgithub
       - run:
@@ -193,7 +182,7 @@ commands:
           command: git config user.name "CircleCI build"
       - run:
           name: Setup of user.email for Git
-          command: git config user.email "automagic@circleci.com"
+          command: git config user.email ${GITHUB_EMAIL_ADDRESS}
       - run:
           name: Preparing Release
           command: ./mvnw --batch-mode release:prepare
@@ -239,17 +228,11 @@ jobs:
       - unit-test
       - sonar-scan
 
-  publish-with-docker:
+  publish-deploy-release-with-docker:
     executor: docker-executor
     working_directory: << pipeline.parameters.workingdir >>
     steps:
-      - publish-docker
-
-  deploy-release-with-docker:
-    executor: docker-executor
-    working_directory: << pipeline.parameters.workingdir >>
-    steps:
-      - deploy-release-github-packages
+      - publish-deploy-release-github-packages
 
   build-with-linux-machine:
     executor: linux-machine-executor
@@ -265,17 +248,11 @@ jobs:
       - unit-test
       - sonar-scan
 
-  publish-with-linux-machine:
-    executor: linux-machine-executor
-    working_directory: << pipeline.parameters.workingdir >>
-    steps:
-      - publish-docker
-
   deploy-release-with-linux-machine:
     executor: linux-machine-executor
     working_directory: << pipeline.parameters.workingdir >>
     steps:
-      - deploy-release-github-packages
+      - publish-deploy-release-github-packages
 
 # Invoke jobs via workflows
 # See: https://circleci.com/docs/2.0/configuration-reference/#workflows
@@ -300,19 +277,7 @@ workflows:
               # Ignore nexus-repo branch
               ignore: << pipeline.parameters.nexus-repo-branch >>
 
-      #      - publish-with-docker:
-      #          requires:
-      #            - unit-test-with-docker
-      #          filters:
-      #            tags:
-      #              # Only when a git tag is pushed
-      #              only: << pipeline.parameters.release-tag-regex >>
-      #            branches:
-      #              # Only master branch gets published
-      #              only: /^(<< pipeline.parameters.main-repo-branch >>)$/
-      #
-
-      - deploy-release-with-docker:
+      - publish-deploy-release-with-docker:
           requires:
             - unit-test-with-docker
           filters:
@@ -342,17 +307,6 @@ workflows:
             branches:
               # Ignore nexus-repo branch
               ignore: << pipeline.parameters.nexus-repo-branch >>
-
-      - publish-with-linux-machine:
-          requires:
-            - unit-test-with-linux-machine
-          filters:
-            tags:
-              # Only when a git tag is pushed
-              only: << pipeline.parameters.release-tag-regex >>
-            branches:
-              # Only master branch gets published
-              only: /^(<< pipeline.parameters.main-repo-branch >>)$/
 
       - deploy-release-with-linux-machine:
           requires:
