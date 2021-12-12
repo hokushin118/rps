@@ -176,22 +176,6 @@ commands:
           paths:
             - .
 
-  deploy-github-packages:
-    description: "Deploys generated artifact to the GitHub Packages repository."
-    steps:
-      # Reuse the workspace from the previous job
-      - attach_workspace:
-          at: << pipeline.parameters.workingdir >>
-      - move_settings_cmd
-      - run:
-          name: Deploying to the GitHub Packages repository with Maven Deploy plugin
-          command: ./mvnw deploy -Pgithub
-      # Save workspace for subsequent jobs
-      - persist_to_workspace:
-          root: << pipeline.parameters.workingdir >>
-          paths:
-            - .
-
   deploy-release-github-packages:
     description: |
       Deploys generated artifact to the GitHub Packages repository.
@@ -204,6 +188,12 @@ commands:
       - run:
           name: Deploying to the GitHub Packages repository with Maven Deploy plugin
           command: ./mvnw deploy -s ~/.m2/settings.xml -Pgithub
+      - run:
+          name: Setup of user.name for Git
+          command: git config user.name "CircleCI build"
+      - run:
+          name: Setup of user.email for Git
+          command: git config user.email "automagic@circleci.com"
       - run:
           name: Preparing Release
           command: ./mvnw --batch-mode release:prepare
