@@ -328,6 +328,9 @@ workflows:
             branches:
               # Only master branch gets published
               only: /^(<< pipeline.parameters.main-repo-branch >>)$/
+            tags:
+              # Only when a git tag is pushed
+              only: << pipeline.parameters.release-tag-regex >>
       - deploy-with-docker:
           requires:
             - unit-test-with-docker
@@ -348,6 +351,9 @@ workflows:
             branches:
               # Only master branch gets deployed
               only: /^(<< pipeline.parameters.main-repo-branch >>)$/
+            tags:
+              # Only when a git tag is pushed
+              only: << pipeline.parameters.release-tag-regex >>
 
   # This job is responsible for building, testing, deploying of the application on Linux machine.
   # It also creates the application Docker image and publishes it in the Docker Hub repository.
@@ -377,6 +383,9 @@ workflows:
             branches:
               # Only master branch gets published
               only: /^(<< pipeline.parameters.main-repo-branch >>)$/
+            tags:
+              # Only when a git tag is pushed
+              only: << pipeline.parameters.release-tag-regex >>
       - deploy-with-linux-machine:
           requires:
             - unit-test-with-linux-machine
@@ -397,3 +406,6 @@ workflows:
             branches:
               # Only master branch gets deployed
               only: /^(<< pipeline.parameters.main-repo-branch >>)$/
+            tags:
+              # Only when a git tag is pushed
+              only: << pipeline.parameters.release-tag-regex >>
