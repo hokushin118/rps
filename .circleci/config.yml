@@ -45,7 +45,8 @@ parameters:
       Regex that matches the SemVer (Semantic Versioning) rules.
       https://rgxdb.com/r/40OZ1HN5
     type: string
-    default: "/(?:0|[1-9]\d*)\.(?:0|[1-9]\d*)\.(?:0|[1-9]\d*)/"
+    default: |
+      /(?:0|[1-9]\d*)\.(?:0|[1-9]\d*)\.(?:0|[1-9]\d*)/
 
 # Several steps in this config use the same, specialized steps.
 # Commands can be used to extract a common set of steps into a reusable-block.
@@ -321,32 +322,32 @@ workflows:
           requires:
             - unit-test-with-docker
           filters:
+            tags:
+              # Only when a git tag is pushed
+              only: << pipeline.parameters.release-tag-regex >>
             branches:
               # Only master branch gets published
               only: /^(<< pipeline.parameters.main-repo-branch >>)$/
-            tags:
-              # Only when a git tag is pushed
-              only: << pipeline.parameters.release-tag-regex >>
       - deploy-with-docker:
           requires:
-            - publish-with-docker
+            - unit-test-with-docker
           filters:
-            branches:
-              # Only master branch gets deployed
-              only: /^(<< pipeline.parameters.main-repo-branch >>)$/
             tags:
               # Only when a git tag is pushed
               only: << pipeline.parameters.release-tag-regex >>
+            branches:
+              # Only master branch gets deployed
+              only: /^(<< pipeline.parameters.main-repo-branch >>)$/
       - release-with-docker:
           requires:
-            - publish-with-docker
+            - unit-test-with-docker
           filters:
-            branches:
-              # Only master branch gets deployed
-              only: /^(<< pipeline.parameters.main-repo-branch >>)$/
             tags:
               # Only when a git tag is pushed
               only: << pipeline.parameters.release-tag-regex >>
+            branches:
+              # Only master branch gets deployed
+              only: /^(<< pipeline.parameters.main-repo-branch >>)$/
 
   # This job is responsible for building, testing, deploying of the application on Linux machine.
   # It also creates the application Docker image and publishes it in the Docker Hub repository.
@@ -370,29 +371,29 @@ workflows:
           requires:
             - unit-test-with-linux-machine
           filters:
+            tags:
+              # Only when a git tag is pushed
+              only: << pipeline.parameters.release-tag-regex >>
             branches:
               # Only master branch gets published
               only: /^(<< pipeline.parameters.main-repo-branch >>)$/
-            tags:
-              # Only when a git tag is pushed
-              only: << pipeline.parameters.release-tag-regex >>
       - deploy-with-linux-machine:
           requires:
-            - publish-with-linux-machine
+            - unit-test-with-linux-machine
           filters:
-            branches:
-              # Only master branch gets deployed
-              only: /^(<< pipeline.parameters.main-repo-branch >>)$/
             tags:
               # Only when a git tag is pushed
               only: << pipeline.parameters.release-tag-regex >>
+            branches:
+              # Only master branch gets deployed
+              only: /^(<< pipeline.parameters.main-repo-branch >>)$/
       - release-with-linux-machine:
           requires:
-            - publish-with-docker
+            - unit-test-with-linux-machine
           filters:
-            branches:
-              # Only master branch gets deployed
-              only: /^(<< pipeline.parameters.main-repo-branch >>)$/
             tags:
               # Only when a git tag is pushed
               only: << pipeline.parameters.release-tag-regex >>
+            branches:
+              # Only master branch gets deployed
+              only: /^(<< pipeline.parameters.main-repo-branch >>)$/
