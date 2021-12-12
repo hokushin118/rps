@@ -315,34 +315,32 @@ workflows:
             branches:
               # Ignore nexus-repo branch
               ignore: << pipeline.parameters.nexus-repo-branch >>
-
-      - publish-with-docker:
-          requires:
-            - unit-test-with-docker
-          filters:
-            tags:
-              # Only when a git tag is pushed
-              only: << pipeline.parameters.release-tag-regex >>
-            branches:
-              # Only master branch gets published
-              only: /^(<< pipeline.parameters.main-repo-branch >>)$/
-
-      - deploy-with-docker:
-          requires:
-            - unit-test-with-docker
-          filters:
-            tags:
-              # Only when a git tag is pushed
-              only: << pipeline.parameters.release-tag-regex >>
-            branches:
-              # Only master branch gets deployed
-              only: /^(<< pipeline.parameters.main-repo-branch >>)$/
+#
+#      - publish-with-docker:
+#          requires:
+#            - unit-test-with-docker
+#          filters:
+#            tags:
+#              # Only when a git tag is pushed
+#              only: << pipeline.parameters.release-tag-regex >>
+#            branches:
+#              # Only master branch gets published
+#              only: /^(<< pipeline.parameters.main-repo-branch >>)$/
+#
+#      - deploy-with-docker:
+#          requires:
+#            - unit-test-with-docker
+#          filters:
+#            tags:
+#              # Only when a git tag is pushed
+#              only: << pipeline.parameters.release-tag-regex >>
+#            branches:
+#              # Only master branch gets deployed
+#              only: /^(<< pipeline.parameters.main-repo-branch >>)$/
 
       - release-with-docker:
           requires:
             - unit-test-with-docker
-            - publish-with-docker
-            - deploy-with-docker
           filters:
             tags:
               # Only when a git tag is pushed
