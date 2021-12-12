@@ -143,7 +143,6 @@ commands:
       # Reuse the workspace from the previous job
       - attach_workspace:
           at: << pipeline.parameters.workingdir >>
-      - move_settings_cmd
       - run:
           name: Creating and publishing Docker image to the Docker Hub repository with jib plugin
           command: |
@@ -168,10 +167,9 @@ commands:
       # Reuse the workspace from the previous job
       - attach_workspace:
           at: << pipeline.parameters.workingdir >>
-      - move_settings_cmd
       - run:
           name: Deploying to Internal Artifactory (GitHub) with Maven Deploy plugin
-          command: ./mvnw deploy
+          command: ./mvnw -s ~/.m2/settings.xml deploy
       # Save workspace for subsequent jobs
       - persist_to_workspace:
           root: << pipeline.parameters.workingdir >>
@@ -184,10 +182,9 @@ commands:
       # Reuse the workspace from the previous job
       - attach_workspace:
           at: << pipeline.parameters.workingdir >>
-      - move_settings_cmd
       - run:
           name: Deploying to the GitHub Packages repository with Maven Deploy plugin
-          command: ./mvnw deploy -Pgithub
+          command: ./mvnw deploy -s ~/.m2/settings.xml -Pgithub
       # Save workspace for subsequent jobs
       - persist_to_workspace:
           root: << pipeline.parameters.workingdir >>
@@ -212,11 +209,12 @@ commands:
     steps:
       - checkout # check out source code to working directory
       - restore_cache_cmd
+      - move_settings_cmd
       - run:
           name: Packaging application
           command: |
             sudo chmod +x ./mvnw
-            ./mvnw clean package -Pprod
+            ./mvnw clean package -s ~/.m2/settings.xml -Pprod
       - save_cache_cmd
       # Save workspace for subsequent jobs
       - persist_to_workspace:
