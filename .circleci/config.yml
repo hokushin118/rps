@@ -259,8 +259,6 @@ jobs:
     executor: docker-executor
     working_directory: << pipeline.parameters.workingdir >>
     steps:
-      - publish-docker
-      - deploy-github-packages
       - release-github-packages
 
   build-with-linux-machine:
@@ -396,6 +394,7 @@ workflows:
 
       - release-with-linux-machine:
           requires:
+            - unit-test-with-linux-machine
             - publish-with-linux-machine
             - deploy-with-linux-machine
           filters:
