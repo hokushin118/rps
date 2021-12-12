@@ -182,6 +182,7 @@ commands:
       # Reuse the workspace from the previous job
       - attach_workspace:
           at: << pipeline.parameters.workingdir >>
+      - move_settings_cmd
       - run:
           name: Deploying to the GitHub Packages repository with Maven Deploy plugin
           command: ./mvnw deploy -Pgithub
@@ -342,7 +343,8 @@ workflows:
 
       - release-with-docker:
           requires:
-            - unit-test-with-docker
+            - publish-with-docker
+            - deploy-with-docker
           filters:
             tags:
               # Only when a git tag is pushed
@@ -395,7 +397,8 @@ workflows:
 
       - release-with-linux-machine:
           requires:
-            - unit-test-with-linux-machine
+            - publish-with-linux-machine
+            - deploy-with-linux-machine
           filters:
             tags:
               # Only when a git tag is pushed
