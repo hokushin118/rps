@@ -41,9 +41,7 @@ parameters:
     type: string
     default: "~/rps"
   release-tag-regex:
-    desctption: |
-      Regex that matches the SemVer (Semantic Versioning) rules.
-      https://rgxdb.com/r/40OZ1HN5
+    desctption: "Regex that matches the SemVer (Semantic Versioning) rules https://rgxdb.com/r/40OZ1HN5"
     type: string
     default: |
       /(?<=^[Vv]|^)(?:(?<major>(?:0|[1-9](?:(?:0|[1-9])+)*))[.](?<minor>(?:0|[1-9](?:(?:0|[1-9])+)*))[.](?<patch>(?:0|[1-9](?:(?:0|[1-9])+)*))(?:-(?<prerelease>(?:(?:(?:[A-Za-z]|-)(?:(?:(?:0|[1-9])|(?:[A-Za-z]|-))+)?|(?:(?:(?:0|[1-9])|(?:[A-Za-z]|-))+)(?:[A-Za-z]|-)(?:(?:(?:0|[1-9])|(?:[A-Za-z]|-))+)?)|(?:0|[1-9](?:(?:0|[1-9])+)*))(?:[.](?:(?:(?:[A-Za-z]|-)(?:(?:(?:0|[1-9])|(?:[A-Za-z]|-))+)?|(?:(?:(?:0|[1-9])|(?:[A-Za-z]|-))+)(?:[A-Za-z]|-)(?:(?:(?:0|[1-9])|(?:[A-Za-z]|-))+)?)|(?:0|[1-9](?:(?:0|[1-9])+)*)))*))?(?:[+](?<build>(?:(?:(?:[A-Za-z]|-)(?:(?:(?:0|[1-9])|(?:[A-Za-z]|-))+)?|(?:(?:(?:0|[1-9])|(?:[A-Za-z]|-))+)(?:[A-Za-z]|-)(?:(?:(?:0|[1-9])|(?:[A-Za-z]|-))+)?)|(?:(?:0|[1-9])+))(?:[.](?:(?:(?:[A-Za-z]|-)(?:(?:(?:0|[1-9])|(?:[A-Za-z]|-))+)?|(?:(?:(?:0|[1-9])|(?:[A-Za-z]|-))+)(?:[A-Za-z]|-)(?:(?:(?:0|[1-9])|(?:[A-Za-z]|-))+)?)|(?:(?:0|[1-9])+)))*))?)$/
@@ -194,20 +192,20 @@ commands:
           paths:
             - .
 
-    publish-github-release:
-      description: "Publishes application Releases on GitHub repository."
-      docker:
-        - image: cibuilds/github:0.10
-      steps:
-        # Reuse the workspace from the previous job
-        - attach_workspace:
-            at: << pipeline.parameters.workingdir >>
-        - run:
-            name: Preparing Release
-            command: ./mvnw --batch-mode release:prepare -s ~/.m2/settings.xml
-        - run:
-            name: Performing Release
-            command: ./mvnw --batch-mode release:perform -s ~/.m2/settings.xml
+  publish-github-release:
+    description: "Publishes application Releases on GitHub repository."
+    docker:
+      - image: cibuilds/github:0.10
+    steps:
+      # Reuse the workspace from the previous job
+      - attach_workspace:
+          at: << pipeline.parameters.workingdir >>
+      - run:
+          name: Preparing Release
+          command: ./mvnw --batch-mode release:prepare -s ~/.m2/settings.xml
+      - run:
+          name: Performing Release
+          command: ./mvnw --batch-mode release:perform -s ~/.m2/settings.xml
 
   checkout-and-build:
     description: "Checkout repository and builds and packages the application."
