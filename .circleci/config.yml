@@ -152,7 +152,7 @@ commands:
           paths:
             - .
 
-  publish-deploy-release-github-packages:
+  checkout-build-release:
     description: |
       Creates the application Docker image and publishes it to the Docker Hub repository.
       Deploys generated artifact to the GitHub Packages repository.
@@ -193,7 +193,7 @@ commands:
           name: Performing Release
           command: ./mvnw --batch-mode release:perform -s ~/.m2/settings.xml
 
-  checkout-and-build:
+  checkout-build:
     description: "Checkout repository and builds and packages the application."
     steps:
       - checkout # check out source code to working directory
@@ -220,7 +220,7 @@ jobs:
     executor: docker-executor
     working_directory: << pipeline.parameters.workingdir >>
     steps:
-      - checkout-and-build
+      - checkout-build
 
   unit-test-with-docker:
     executor: docker-executor
@@ -231,18 +231,18 @@ jobs:
       - unit-test
       - sonar-scan
 
-  publish-deploy-release-with-docker:
+  release-with-docker:
     executor: docker-executor
     working_directory: << pipeline.parameters.workingdir >>
     steps:
-      - publish-deploy-release-github-packages
+      - checkout-build-release
 
   build-with-linux-machine:
     executor: linux-machine-executor
     working_directory: << pipeline.parameters.workingdir >>
     steps:
       - install_jdk_cmd
-      - checkout-and-build
+      - checkout-build
 
   unit-test-with-linux-machine:
     executor: linux-machine-executor
@@ -251,11 +251,11 @@ jobs:
       - unit-test
       - sonar-scan
 
-  publish-deploy-release-with-linux-machine:
+  release-with-linux-machine:
     executor: linux-machine-executor
     working_directory: << pipeline.parameters.workingdir >>
     steps:
-      - publish-deploy-release-github-packages
+      - checkout-build-release
 
 # Invoke jobs via workflows
 # See: https://circleci.com/docs/2.0/configuration-reference/#workflows
@@ -266,6 +266,9 @@ workflows:
     jobs:
       - build-with-docker:
           filters:
+            #            tags:
+            #              # Only when a git tag is pushed
+            #              ignore: << pipeline.parameters.release-tag-regex >>
             branches:
               # Ignore nexus-repo branch
               ignore: << pipeline.parameters.nexus-repo-branch >>
@@ -276,11 +279,14 @@ workflows:
           # execute the job in SonarCloud security context
           context: SonarCloud
           filters:
+            #            tags:
+            #              # Only when a git tag is pushed
+            #              ignore: << pipeline.parameters.release-tag-regex >>
             branches:
               # Ignore nexus-repo branch
               ignore: << pipeline.parameters.nexus-repo-branch >>
 
-      - publish-deploy-release-with-docker:
+      - release-with-docker:
           requires:
             - unit-test-with-docker
           filters:
@@ -297,6 +303,9 @@ workflows:
     jobs:
       - build-with-linux-machine:
           filters:
+#            tags:
+#              # Only when a git tag is pushed
+#              ignore: << pipeline.parameters.release-tag-regex >>
             branches:
               # Ignore nexus-repo branch
               ignore: << pipeline.parameters.nexus-repo-branch >>
@@ -307,11 +316,14 @@ workflows:
           # execute the job in SonarCloud security context
           context: SonarCloud
           filters:
+#            tags:
+#              # Only when a git tag is pushed
+#              ignore: << pipeline.parameters.release-tag-regex >>
             branches:
               # Ignore nexus-repo branch
               ignore: << pipeline.parameters.nexus-repo-branch >>
 
-      - publish-deploy-release-with-linux-machine:
+      - release-with-linux-machine:
           requires:
             - unit-test-with-linux-machine
           filters:

@@ -19,8 +19,8 @@
 
     <scm>
         <url>https://github.com/hokushin118/rps</url>
-        <connection>scm:git:git://github.com/hokushin118/rps</connection>
-        <developerConnection>scm:git:git://github.com/hokushin118/rps</developerConnection>
+        <connection>scm:git:git://github.com/hokushin118/rps.git</connection>
+        <developerConnection>scm:git:git@github.com:hokushin118/rps.git</developerConnection>
     </scm>
 
     <properties>
