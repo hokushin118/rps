@@ -161,6 +161,8 @@ commands:
       Creates the application Docker image and publishes it to the Docker Hub repository.
       Deploys generated artifact to the GitHub Packages repository.
       Publishes application Releases on GitHub repository.
+    docker:
+      - image: cibuilds/github:0.10
     steps:
       # Reuse the workspace from the previous job
       - attach_workspace:
