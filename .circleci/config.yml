@@ -198,8 +198,7 @@ commands:
       - run:
           name: Deploying Release on GitHub
           command: |
-            ${VERSION} = v1.0.4
-            ghr -t ${GITHUB_TOKEN} -u ${CIRCLE_PROJECT_USERNAME} -r ${CIRCLE_PROJECT_REPONAME} -c ${CIRCLE_SHA1} -delete ${VERSION} << pipeline.parameters.workingdir >>/
+            ghr -t ${GITHUB_TOKEN} -u ${CIRCLE_PROJECT_USERNAME} -r ${CIRCLE_PROJECT_REPONAME} -c ${CIRCLE_SHA1} -delete v1.0.4 << pipeline.parameters.workingdir >>/
       - run:
           name: Creating and publishing Docker image to the Docker Hub repository with jib plugin
           command: |
