@@ -181,6 +181,11 @@ commands:
           fingerprints:
             - "SO:ME:FIN:G:ER:PR:IN:T"
       - run:
+          name: Avoid hosts unknown for GiHhub
+          command: |
+            ssh-keyscan github.com
+            mkdir -p ~/.ssh/ && echo -e "Host github.com\n\tStrictHostKeyChecking no\n" > ~/.ssh/config
+      - run:
           name: Setup of user.name for Git
           command: git config user.name "CircleCI build"
       - run:
