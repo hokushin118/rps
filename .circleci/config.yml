@@ -185,7 +185,7 @@ commands:
             git clone https://github.com/hokushin118/rps.git
             git checkout release
             git reset --hard origin/master
-            git push
+            git push --force
       - run:
           name: Preparing Release to GitHub
           command: ./mvnw --batch-mode release:prepare -s ~/.m2/settings.xml
