@@ -102,6 +102,17 @@ commands:
             sudo update-alternatives --set javac /usr/lib/jvm/java-11-openjdk-amd64/bin/javac
             java -version
 
+  install_github_cli_cmd:
+    description: "Installs GitHub CLI on Linux machine."
+    steps:
+      - run:
+          name: Installing GitHub CLI
+          command: |
+            curl -fsSL https://cli.github.com/packages/githubcli-archive-keyring.gpg | sudo dd of=/usr/share/keyrings/githubcli-archive-keyring.gpg
+            echo "deb [arch=$(dpkg --print-architecture) signed-by=/usr/share/keyrings/githubcli-archive-keyring.gpg] https://cli.github.com/packages stable main" | sudo tee /etc/apt/sources.list.d/github-cli.list > /dev/null
+            sudo apt update
+            sudo apt install gh
+
   sonar-scan:
     description: "Code quality and security check with SonarQube."
     steps:
@@ -262,6 +273,7 @@ jobs:
     working_directory: << pipeline.parameters.workingdir >>
     steps:
       - install_jdk_cmd
+      - install_github_cli_cmd
       - checkout-build
 
   unit-test-with-linux-machine:
