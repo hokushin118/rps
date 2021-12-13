@@ -187,10 +187,10 @@ commands:
             git merge origin/master
             git push
       - run:
-          name: Preparing Release
+          name: Preparing Release to GitHub
           command: ./mvnw --batch-mode release:prepare -s ~/.m2/settings.xml
       - run:
-          name: Performing Release
+          name: Performing Release to GitHub
           command: ./mvnw --batch-mode release:perform -s ~/.m2/settings.xml
       - run:
           name: Creating and publishing Docker image to the Docker Hub repository with jib plugin
