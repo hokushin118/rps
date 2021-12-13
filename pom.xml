@@ -3,7 +3,7 @@
 
     <groupId>com.al.wa</groupId>
     <artifactId>rps-app</artifactId>
-    <version>1.0.4</version>
+    <version>1.0.4-SNAPSHOT</version>
 
     <packaging>jar</packaging>
 
