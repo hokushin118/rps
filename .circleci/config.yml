@@ -166,9 +166,6 @@ commands:
       - attach_workspace:
           at: << pipeline.parameters.workingdir >>
       - move_settings_cmd
-      #      - run:
-      #          name: Deploying to the GitHub Packages repository with Maven Deploy plugin
-      #          command: ./mvnw deploy -s ~/.m2/settings.xml -Pgithub
       - add_ssh_keys:
           fingerprints:
             - "SO:ME:FIN:G:ER:PR:IN:T"
@@ -198,6 +195,11 @@ commands:
       - run:
           name: Performing Release to GitHub
           command: ./mvnw --batch-mode release:perform -s ~/.m2/settings.xml
+      - run:
+          name: Deploying Release on GitHub
+          command: |
+            ${VERSION} = v1.0.4
+            ghr -t ${GITHUB_TOKEN} -u ${CIRCLE_PROJECT_USERNAME} -r ${CIRCLE_PROJECT_REPONAME} -c ${CIRCLE_SHA1} -delete ${VERSION} << pipeline.parameters.workingdir >>/
       - run:
           name: Creating and publishing Docker image to the Docker Hub repository with jib plugin
           command: |
@@ -302,7 +304,7 @@ workflows:
             #              ignore: << pipeline.parameters.release-tag-regex >>
             branches:
               # Ignore nexus-repo branch
-              ignore: << pipeline.parameters.nexus-repo-branch >>
+              ignore: << pipeline.parameters.nexus-repo-branch >>, << pipeline.parameters.release-repo-branch >>
 
       - release-with-docker:
           requires:
@@ -326,7 +328,7 @@ workflows:
             #              ignore: << pipeline.parameters.release-tag-regex >>
             branches:
               # Ignore nexus-repo branch
-              ignore: << pipeline.parameters.nexus-repo-branch >>
+              ignore: << pipeline.parameters.nexus-repo-branch >>, << pipeline.parameters.release-repo-branch >>
 
       - unit-test-with-linux-machine:
           requires:
@@ -339,7 +341,7 @@ workflows:
             #              ignore: << pipeline.parameters.release-tag-regex >>
             branches:
               # Ignore nexus-repo branch
-              ignore: << pipeline.parameters.nexus-repo-branch >>
+              ignore: << pipeline.parameters.nexus-repo-branch >>, << pipeline.parameters.release-repo-branch >>
 
       - release-with-linux-machine:
           requires:
