@@ -20,7 +20,7 @@ executors:
     docker:
       # with this image as the primary container; this is where all `steps` will run
       - image: circleci/openjdk:11-jdk
-      - image: cibuilds/github:0.10
+      - image: circleci/golang:1.8
   linux-machine-executor:
     machine:
       # recommended linux image - includes Ubuntu 20.04, docker 19.03.13, docker-compose 1.27.4
@@ -210,6 +210,7 @@ commands:
       - run:
           name: Deploying Release on GitHub
           command: |
+            go get github.com/tcnksm/ghr
             ghr -t ${GITHUB_TOKEN} -u ${CIRCLE_PROJECT_USERNAME} -r ${CIRCLE_PROJECT_REPONAME} -c ${CIRCLE_SHA1} -delete v1.0.4 << pipeline.parameters.workingdir >>/
       - run:
           name: Creating and publishing Docker image to the Docker Hub repository with jib plugin
