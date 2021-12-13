@@ -208,7 +208,9 @@ commands:
       - run:
           name: Performing Release for GitHub
           command: ./mvnw --batch-mode release:perform -s ~/.m2/settings.xml
-      - run: git describe --abbrev=0
+      - run:
+          name: Showing latest tag
+          command: git describe --abbrev=0
       - run:
           name: Creating and publishing Docker image to the Docker Hub repository with jib plugin
           command: |
