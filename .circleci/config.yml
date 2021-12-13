@@ -181,12 +181,10 @@ commands:
           fingerprints:
             - "SO:ME:FIN:G:ER:PR:IN:T"
       - run:
-          name: Avoid hosts unknown for GiHhub
+          name: Fetching and adding the ssh keys for GitHub to known_hosts file
           command: |
             mkdir -p ~/.ssh
-            ssh-keyscan github.com
             ssh-keyscan github.com >> ~/.ssh/known_hosts
-      #            mkdir -p ~/.ssh/ && echo -e "Host github.com\n\tStrictHostKeyChecking no\n" > ~/.ssh/config
       - run:
           name: Setup of user.name for Git
           command: git config user.name "CircleCI build"
@@ -310,9 +308,9 @@ workflows:
     jobs:
       - build-with-linux-machine:
           filters:
-#            tags:
-#              # Only when a git tag is pushed
-#              ignore: << pipeline.parameters.release-tag-regex >>
+            #            tags:
+            #              # Only when a git tag is pushed
+            #              ignore: << pipeline.parameters.release-tag-regex >>
             branches:
               # Ignore nexus-repo branch
               ignore: << pipeline.parameters.nexus-repo-branch >>
@@ -323,9 +321,9 @@ workflows:
           # execute the job in SonarCloud security context
           context: SonarCloud
           filters:
-#            tags:
-#              # Only when a git tag is pushed
-#              ignore: << pipeline.parameters.release-tag-regex >>
+            #            tags:
+            #              # Only when a git tag is pushed
+            #              ignore: << pipeline.parameters.release-tag-regex >>
             branches:
               # Ignore nexus-repo branch
               ignore: << pipeline.parameters.nexus-repo-branch >>
