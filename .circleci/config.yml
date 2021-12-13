@@ -177,18 +177,21 @@ commands:
       - run:
           name: Deploying to the GitHub Packages repository with Maven Deploy plugin
           command: ./mvnw deploy -s ~/.m2/settings.xml -Pgithub
+      - add_ssh_keys:
+          fingerprints:
+            - "SO:ME:FIN:G:ER:PR:IN:T"
       - run:
           name: Setup of user.name for Git
           command: git config user.name "CircleCI build"
       - run:
           name: Setup of user.email for Git
           command: git config user.email ${GITHUB_EMAIL_ADDRESS}
-#      - run:
-#          name: Preparing Release
-#          command: ./mvnw --batch-mode release:prepare
-#      - run:
-#          name: Performing Release
-#          command: ./mvnw --batch-mode release:perform
+      - run:
+          name: Preparing Release
+          command: ./mvnw --batch-mode release:prepare -s ~/.m2/settings.xml
+      - run:
+          name: Performing Release
+          command: ./mvnw --batch-mode release:perform -s ~/.m2/settings.xml
 
   checkout-and-build:
     description: "Checkout repository and builds and packages the application."
