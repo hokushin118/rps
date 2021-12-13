@@ -184,7 +184,7 @@ commands:
           command: |
             git clone https://github.com/hokushin118/rps.git
             git checkout release
-            git merge origin/master
+            git reset --hard origin/master
             git push
       - run:
           name: Preparing Release to GitHub
