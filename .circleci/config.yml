@@ -188,10 +188,7 @@ commands:
             git push
       - run:
           name: Preparing Release
-          command: ./mvnw --batch-mode release:clean release:prepare -s ~/.m2/settings.xml
-      - run:
-          name: Performing Release
-          command: ./mvnw --batch-mode release:perform -s ~/.m2/settings.xml
+          command: ./mvnw --batch-mode release:prepare -s ~/.m2/settings.xml
       - run:
           name: Performing Release
           command: ./mvnw --batch-mode release:perform -s ~/.m2/settings.xml
