@@ -20,7 +20,6 @@ executors:
     docker:
       # with this image as the primary container; this is where all `steps` will run
       - image: circleci/openjdk:11-jdk
-      - image: circleci/golang:1.8
   linux-machine-executor:
     machine:
       # recommended linux image - includes Ubuntu 20.04, docker 19.03.13, docker-compose 1.27.4
@@ -110,8 +109,7 @@ commands:
           command: |
             curl -fsSL https://cli.github.com/packages/githubcli-archive-keyring.gpg | sudo dd of=/usr/share/keyrings/githubcli-archive-keyring.gpg
             echo "deb [arch=$(dpkg --print-architecture) signed-by=/usr/share/keyrings/githubcli-archive-keyring.gpg] https://cli.github.com/packages stable main" | sudo tee /etc/apt/sources.list.d/github-cli.list > /dev/null
-            sudo apt update
-            sudo apt install gh
+            sudo apt-get update && sudo apt-get install gh
 
   sonar-scan:
     description: "Code quality and security check with SonarQube."
@@ -195,8 +193,8 @@ commands:
       - run:
           name: Clone GitHub repository
           command: |
-            git clone https://github.com/hokushin118/rps.git
-            git checkout release
+            git clone ${CIRCLE_REPOSITORY_URL}
+            git checkout << pipeline.parameters.release-repo-branch >>
             git reset --hard origin/master
             git push --force
       - run:
@@ -207,11 +205,11 @@ commands:
       - run:
           name: Performing Release to GitHub
           command: ./mvnw --batch-mode release:perform -s ~/.m2/settings.xml
-      - run:
-          name: Deploying Release on GitHub
-          command: |
-            go get github.com/tcnksm/ghr
-            ghr -t ${GITHUB_TOKEN} -u ${CIRCLE_PROJECT_USERNAME} -r ${CIRCLE_PROJECT_REPONAME} -c ${CIRCLE_SHA1} -delete v1.0.4 << pipeline.parameters.workingdir >>/
+   #   - run:
+   #       name: Deploying Release on GitHub
+   #       command: |
+   #         go get github.com/tcnksm/ghr
+   #         ghr -t ${GITHUB_TOKEN} -u ${CIRCLE_PROJECT_USERNAME} -r ${CIRCLE_PROJECT_REPONAME} -c ${CIRCLE_SHA1} -delete v1.0.4 << pipeline.parameters.workingdir >>/
       - run:
           name: Creating and publishing Docker image to the Docker Hub repository with jib plugin
           command: |
@@ -290,6 +288,17 @@ jobs:
     steps:
       - checkout-build-release
 
+  publish-github-release:
+    docker:
+      - image: cibuilds/github:0.10
+    steps:
+      - attach_workspace:
+          at: << pipeline.parameters.workingdir >>
+      - run:
+          name: "Publish Release on GitHub"
+          command: |
+            ghr -t ${GITHUB_TOKEN} -u ${CIRCLE_PROJECT_USERNAME} -r ${CIRCLE_PROJECT_REPONAME} -c ${CIRCLE_SHA1} -delete v1.0.4 << pipeline.parameters.workingdir >>/
+
 # Invoke jobs via workflows
 # See: https://circleci.com/docs/2.0/configuration-reference/#workflows
 workflows:
@@ -329,6 +338,19 @@ workflows:
             branches:
               # Only master branch gets deployed
               only: /^(<< pipeline.parameters.main-repo-branch >>)$/
+
+      - publish-github-release:
+          requires:
+            - release-with-docker
+          filters:
+            tags:
+              # Only when a git tag is pushed
+              only: << pipeline.parameters.release-tag-regex >>
+            branches:
+              # Only master branch gets deployed
+              only: /^(<< pipeline.parameters.main-repo-branch >>)$/
+
+
 
   # This job is responsible for building, testing, deploying of the application on Linux machine.
   # It also creates the application Docker image and publishes it in the Docker Hub repository.
