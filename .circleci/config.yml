@@ -162,21 +162,9 @@ commands:
       - attach_workspace:
           at: << pipeline.parameters.workingdir >>
       - move_settings_cmd
-      - run:
-          name: Creating and publishing Docker image to the Docker Hub repository with jib plugin
-          command: |
-            ./mvnw compile jib:build -Djib.to.auth.username=${DOCKER_HUB_ID} \
-                                     -Djib.to.auth.password=${RPS_DOCKER_HUB_TOKEN} \
-                                     -B -DskipTests=true \
-                                     -Dbuild.number=${CIRCLE_BUILD_NUM} \
-                                     -Dcommit.hash=${CIRCLE_SHA1} \
-                                     -Dcircle.workflow.guid=${CIRCLE_WORKFLOW_ID} \
-                                     -Dbuild.user=${CIRCLE_PROJECT_USERNAME} \
-                                     -Dbuild.repo=${CIRCLE_PROJECT_REPONAME} \
-                                     -Pdocker
-      - run:
-          name: Deploying to the GitHub Packages repository with Maven Deploy plugin
-          command: ./mvnw deploy -s ~/.m2/settings.xml -Pgithub
+      #      - run:
+      #          name: Deploying to the GitHub Packages repository with Maven Deploy plugin
+      #          command: ./mvnw deploy -s ~/.m2/settings.xml -Pgithub
       - add_ssh_keys:
           fingerprints:
             - "SO:ME:FIN:G:ER:PR:IN:T"
@@ -192,11 +180,33 @@ commands:
           name: Setup of user.email for Git
           command: git config user.email ${GITHUB_EMAIL_ADDRESS}
       - run:
+          name: Clone GitHub repository
+          command: |
+            git clone https://github.com/hokushin118/rps.git
+            git checkout release
+            git merge origin/master
+            git push
+      - run:
           name: Preparing Release
-          command: ./mvnw --batch-mode release:prepare -s ~/.m2/settings.xml
+          command: ./mvnw --batch-mode release:clean release:prepare -s ~/.m2/settings.xml
       - run:
           name: Performing Release
           command: ./mvnw --batch-mode release:perform -s ~/.m2/settings.xml
+      - run:
+          name: Performing Release
+          command: ./mvnw --batch-mode release:perform -s ~/.m2/settings.xml
+      - run:
+          name: Creating and publishing Docker image to the Docker Hub repository with jib plugin
+          command: |
+            ./mvnw compile jib:build -Djib.to.auth.username=${DOCKER_HUB_ID} \
+                                     -Djib.to.auth.password=${RPS_DOCKER_HUB_TOKEN} \
+                                     -B -DskipTests=true \
+                                     -Dbuild.number=${CIRCLE_BUILD_NUM} \
+                                     -Dcommit.hash=${CIRCLE_SHA1} \
+                                     -Dcircle.workflow.guid=${CIRCLE_WORKFLOW_ID} \
+                                     -Dbuild.user=${CIRCLE_PROJECT_USERNAME} \
+                                     -Dbuild.repo=${CIRCLE_PROJECT_REPONAME} \
+                                     -Pdocker
 
   checkout-build:
     description: "Checkout repository and builds and packages the application."
