@@ -188,7 +188,9 @@ commands:
             git push --force
       - run:
           name: Preparing Release to GitHub
-          command: ./mvnw --batch-mode release:prepare -s ~/.m2/settings.xml
+          command: |
+            sudo chmod +x ./mvnw
+            ./mvnw --batch-mode release:prepare -s ~/.m2/settings.xml
       - run:
           name: Performing Release to GitHub
           command: ./mvnw --batch-mode release:perform -s ~/.m2/settings.xml
