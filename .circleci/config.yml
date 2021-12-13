@@ -20,6 +20,9 @@ executors:
     docker:
       # with this image as the primary container; this is where all `steps` will run
       - image: circleci/openjdk:11-jdk
+  docker-ghr-executor:
+    docker:
+      - image: cibuilds/github:0.10
   linux-machine-executor:
     machine:
       # recommended linux image - includes Ubuntu 20.04, docker 19.03.13, docker-compose 1.27.4
@@ -170,7 +173,7 @@ commands:
     description: |
       Creates the application Docker image and publishes it to the Docker Hub repository.
       Deploys generated artifact to the GitHub Packages repository.
-      Publishes application Releases on GitHub repository.
+      Publishes application artifacts on GitHub repository.
     steps:
       # Reuse the workspace from the previous job
       - attach_workspace:
@@ -205,11 +208,6 @@ commands:
       - run:
           name: Performing Release to GitHub
           command: ./mvnw --batch-mode release:perform -s ~/.m2/settings.xml
-   #   - run:
-   #       name: Deploying Release on GitHub
-   #       command: |
-   #         go get github.com/tcnksm/ghr
-   #         ghr -t ${GITHUB_TOKEN} -u ${CIRCLE_PROJECT_USERNAME} -r ${CIRCLE_PROJECT_REPONAME} -c ${CIRCLE_SHA1} -delete v1.0.4 << pipeline.parameters.workingdir >>/
       - run:
           name: Creating and publishing Docker image to the Docker Hub repository with jib plugin
           command: |
@@ -222,6 +220,32 @@ commands:
                                      -Dbuild.user=${CIRCLE_PROJECT_USERNAME} \
                                      -Dbuild.repo=${CIRCLE_PROJECT_REPONAME} \
                                      -Pdocker
+      # Save workspace for subsequent jobs
+      - persist_to_workspace:
+          root: << pipeline.parameters.workingdir >>
+          paths:
+            - .
+
+  publish-github-release:
+    description: "Publishes application Releases on GitHub repository"
+    steps:
+      # Reuse the workspace from the previous job
+      - attach_workspace:
+          at: << pipeline.parameters.workingdir >>
+      - move_settings_cmd
+      - add_ssh_keys:
+          fingerprints:
+            - "SO:ME:FIN:G:ER:PR:IN:T"
+      - run:
+          name: Fetching and adding the ssh keys for GitHub to known_hosts file
+          command: |
+            mkdir -p ~/.ssh
+            ssh-keyscan github.com >> ~/.ssh/known_hosts
+      - run:
+          name: Deploying Release on GitHub
+          command: |
+            ghr -t ${GITHUB_TOKEN} -u ${CIRCLE_PROJECT_USERNAME} -r ${CIRCLE_PROJECT_REPONAME} -c ${CIRCLE_SHA1} -delete v1.0.4 << pipeline.parameters.workingdir >>/
+
 
   checkout-build:
     description: "Checkout repository and builds and packages the application."
@@ -267,6 +291,12 @@ jobs:
     steps:
       - checkout-build-release
 
+  publish-release-with-docker:
+    executor: docker-ghr-executor
+    working_directory: << pipeline.parameters.workingdir >>
+    steps:
+      - publish-github-release
+
   build-with-linux-machine:
     executor: linux-machine-executor
     working_directory: << pipeline.parameters.workingdir >>
@@ -287,17 +317,6 @@ jobs:
     working_directory: << pipeline.parameters.workingdir >>
     steps:
       - checkout-build-release
-
-  publish-github-release:
-    docker:
-      - image: cibuilds/github:0.10
-    steps:
-      - attach_workspace:
-          at: << pipeline.parameters.workingdir >>
-      - run:
-          name: "Publish Release on GitHub"
-          command: |
-            ghr -t ${GITHUB_TOKEN} -u ${CIRCLE_PROJECT_USERNAME} -r ${CIRCLE_PROJECT_REPONAME} -c ${CIRCLE_SHA1} -delete v1.0.4 << pipeline.parameters.workingdir >>/
 
 # Invoke jobs via workflows
 # See: https://circleci.com/docs/2.0/configuration-reference/#workflows
@@ -339,7 +358,7 @@ workflows:
               # Only master branch gets deployed
               only: /^(<< pipeline.parameters.main-repo-branch >>)$/
 
-      - publish-github-release:
+      - publish-release-with-docker:
           requires:
             - release-with-docker
           filters:
@@ -349,8 +368,6 @@ workflows:
             branches:
               # Only master branch gets deployed
               only: /^(<< pipeline.parameters.main-repo-branch >>)$/
-
-
 
   # This job is responsible for building, testing, deploying of the application on Linux machine.
   # It also creates the application Docker image and publishes it in the Docker Hub repository.
