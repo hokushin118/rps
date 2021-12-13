@@ -206,8 +206,9 @@ commands:
             sudo chmod +x ./mvnw
             ./mvnw --batch-mode release:prepare -s ~/.m2/settings.xml
       - run:
-          name: Performing Release to GitHub
+          name: Performing Release for GitHub
           command: ./mvnw --batch-mode release:perform -s ~/.m2/settings.xml
+      - run: git describe --abbrev=0
       - run:
           name: Creating and publishing Docker image to the Docker Hub repository with jib plugin
           command: |
@@ -232,15 +233,6 @@ commands:
       # Reuse the workspace from the previous job
       - attach_workspace:
           at: << pipeline.parameters.workingdir >>
-      - move_settings_cmd
-      - add_ssh_keys:
-          fingerprints:
-            - "SO:ME:FIN:G:ER:PR:IN:T"
-      - run:
-          name: Fetching and adding the ssh keys for GitHub to known_hosts file
-          command: |
-            mkdir -p ~/.ssh
-            ssh-keyscan github.com >> ~/.ssh/known_hosts
       - run:
           name: Deploying Release on GitHub
           command: |
@@ -395,13 +387,13 @@ workflows:
               # Ignore nexus-repo branch
               ignore: << pipeline.parameters.nexus-repo-branch >>, << pipeline.parameters.release-repo-branch >>
 
-      - release-with-linux-machine:
-          requires:
-            - unit-test-with-linux-machine
-          filters:
-            tags:
-              # Only when a git tag is pushed
-              only: << pipeline.parameters.release-tag-regex >>
-            branches:
-              # Only master branch gets deployed
-              only: /^(<< pipeline.parameters.main-repo-branch >>)$/
+#      - release-with-linux-machine:
+#          requires:
+#            - unit-test-with-linux-machine
+#          filters:
+#            tags:
+#              # Only when a git tag is pushed
+#              only: << pipeline.parameters.release-tag-regex >>
+#            branches:
+#              # Only master branch gets deployed
+#              only: /^(<< pipeline.parameters.main-repo-branch >>)$/
