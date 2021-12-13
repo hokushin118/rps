@@ -183,8 +183,10 @@ commands:
       - run:
           name: Avoid hosts unknown for GiHhub
           command: |
+            mkdir -p ~/.ssh
             ssh-keyscan github.com
-            mkdir -p ~/.ssh/ && echo -e "Host github.com\n\tStrictHostKeyChecking no\n" > ~/.ssh/config
+            ssh-keyscan github.com >> ~/.ssh/known_hosts
+      #            mkdir -p ~/.ssh/ && echo -e "Host github.com\n\tStrictHostKeyChecking no\n" > ~/.ssh/config
       - run:
           name: Setup of user.name for Git
           command: git config user.name "CircleCI build"
