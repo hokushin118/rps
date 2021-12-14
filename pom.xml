@@ -549,7 +549,7 @@
                     <!-- Tasks to be run before creating tag -->
                     <preparationGoals>clean verify</preparationGoals>
                     <releaseProfiles>github</releaseProfiles>
-                    <scmCommentPrefix>[skip ci]</scmCommentPrefix>
+                    <scmCommentPrefix>[skip ci] Maven Release Plugin ${maven-release-plugin.version}</scmCommentPrefix>
                     <checkModificationExcludes>
                         <checkModificationExclude>mvnw</checkModificationExclude>
                     </checkModificationExcludes>
