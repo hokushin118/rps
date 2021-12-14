@@ -21,8 +21,8 @@
         <url>https://github.com/hokushin118/rps</url>
         <connection>scm:git:git://github.com/hokushin118/rps.git</connection>
         <developerConnection>scm:git:git@github.com:hokushin118/rps.git</developerConnection>
-      <tag>v1.0.4</tag>
-  </scm>
+        <tag>HEAD</tag>
+    </scm>
 
     <properties>
         <!-- General properties -->
