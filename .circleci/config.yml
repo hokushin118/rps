@@ -162,7 +162,7 @@ commands:
           at: << pipeline.parameters.workingdir >>
       - run:
           name: Deploying to Internal Artifactory (GitHub) with Maven Deploy plugin
-          command: ./mvnw -s ~/.m2/settings.xml deploy
+          command: ./mvnw -s ~/.m2/settings.xml clean deploy
       # Save workspace for subsequent jobs
       - persist_to_workspace:
           root: << pipeline.parameters.workingdir >>
