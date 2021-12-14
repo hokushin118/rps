@@ -363,7 +363,7 @@ workflows:
               # Only when a git tag is pushed
               ignore: |
                 << pipeline.parameters.release-tag-regex >>
-                ${CIRCLE_TAG}
+                -n ${CIRCLE_TAG}
             branches:
               # Ignore nexus-repo branch
               ignore: << pipeline.parameters.nexus-repo-branch >>
