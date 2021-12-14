@@ -199,7 +199,7 @@ commands:
             git clone ${CIRCLE_REPOSITORY_URL}
             git checkout << pipeline.parameters.release-repo-branch >>
             git reset --hard origin/master
-            git push --force
+            git push origin << pipeline.parameters.release-repo-branch >> --force
       - run:
           name: Preparing Release to GitHub
           command: |
@@ -240,7 +240,6 @@ commands:
           command: |
             VERSION=$(git describe --abbrev=0)
             ghr -t ${GITHUB_TOKEN} -u ${CIRCLE_PROJECT_USERNAME} -r ${CIRCLE_PROJECT_REPONAME} -c ${CIRCLE_SHA1} -delete ${VERSION} << pipeline.parameters.workingdir >>/
-
 
   checkout-build:
     description: "Checkout repository and builds and packages the application."
