@@ -272,7 +272,7 @@ jobs:
       - unit-test
       - sonar-scan
 
-  build--release-with-docker:
+  build-release-with-docker:
     executor: docker-executor
     working_directory: << pipeline.parameters.workingdir >>
     steps:
@@ -313,7 +313,7 @@ jobs:
 workflows:
   # This job is responsible for building, testing, deploying of the application on Docker container.
   # It also creates the application Docker image and publishes it in the Docker Hub repository.
-  build-test-deploy-with-docker:
+  build-test-with-docker:
     jobs:
       - build-with-docker:
           filters:
@@ -337,6 +337,8 @@ workflows:
               # Ignore nexus-repo branch
               ignore: << pipeline.parameters.nexus-repo-branch >>
 
+  build-test-release-with-docker:
+    jobs:
       - build-release-with-docker:
           filters:
             tags:
@@ -359,7 +361,7 @@ workflows:
 
   # This job is responsible for building, testing, deploying of the application on Linux machine.
   # It also creates the application Docker image and publishes it in the Docker Hub repository.
-  build-test-deploy-with-linux-machine:
+  build-test-with-linux-machine:
     jobs:
       - build-with-linux-machine:
           filters:
