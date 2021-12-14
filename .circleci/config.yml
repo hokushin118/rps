@@ -365,9 +365,7 @@ workflows:
           filters:
             tags:
               # Only when a git tag is pushed
-              ignore: |
-                << pipeline.parameters.release-tag-regex >>
-                -n ${CIRCLE_TAG}
+              only:  /.*/
             branches:
               # Ignore nexus-repo branch
               ignore: << pipeline.parameters.nexus-repo-branch >>
@@ -380,7 +378,7 @@ workflows:
           filters:
             tags:
               # Only when a git tag is pushed
-              ignore: -n ${CIRCLE_TAG}
+              only:  /.*/
             branches:
               # Ignore nexus-repo branch
               ignore: << pipeline.parameters.nexus-repo-branch >>

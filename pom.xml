@@ -550,7 +550,7 @@
                     <preparationGoals>clean verify</preparationGoals>
                     <releaseProfiles>github</releaseProfiles>
                     <!-- Commit message to be shown in the CircleCI job -->
-                    <scmCommentPrefix>Maven Release Plugin ${maven-release-plugin.version} [skip ci]</scmCommentPrefix>
+                    <scmCommentPrefix>[skip ci] Maven Release Plugin ${maven-release-plugin.version} </scmCommentPrefix>
                     <checkModificationExcludes>
                         <checkModificationExclude>mvnw</checkModificationExclude>
                     </checkModificationExcludes>
