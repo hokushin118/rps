@@ -13,6 +13,7 @@
 * JUnit 5.8.2
 * Mockito 3.9.0
 * CircleCI 2.0 for CI/CD
+* SonarCloud for SAST
 ### Running the RPS Game From the Command Line
 * Clone this repository:
 ```
