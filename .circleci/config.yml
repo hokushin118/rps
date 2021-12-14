@@ -345,8 +345,6 @@ workflows:
               ignore: << pipeline.parameters.nexus-repo-branch >>, << pipeline.parameters.release-repo-branch >>
 
       - release-with-docker:
-          requires:
-            - unit-test-with-docker
           filters:
             tags:
               # Only when a git tag is pushed
