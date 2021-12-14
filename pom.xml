@@ -3,7 +3,7 @@
 
     <groupId>com.al.wa</groupId>
     <artifactId>rps-app</artifactId>
-    <version>1.0.8</version>
+    <version>1.0.9-SNAPSHOT</version>
 
     <packaging>jar</packaging>
 
@@ -21,7 +21,7 @@
         <url>https://github.com/hokushin118/rps</url>
         <connection>scm:git:git://github.com/hokushin118/rps.git</connection>
         <developerConnection>scm:git:git@github.com:hokushin118/rps.git</developerConnection>
-        <tag>v1.0.8</tag>
+        <tag>HEAD</tag>
     </scm>
 
     <properties>
