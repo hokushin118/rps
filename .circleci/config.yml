@@ -292,6 +292,7 @@ jobs:
     executor: docker-ghr-executor
     working_directory: << pipeline.parameters.workingdir >>
     steps:
+      - checkout-build
       - publish-github-release
 
   build-with-linux-machine:
