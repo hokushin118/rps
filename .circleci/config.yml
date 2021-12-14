@@ -238,7 +238,8 @@ commands:
       - run:
           name: Deploying Release on GitHub
           command: |
-            ghr -t ${GITHUB_TOKEN} -u ${CIRCLE_PROJECT_USERNAME} -r ${CIRCLE_PROJECT_REPONAME} -c ${CIRCLE_SHA1} -delete v1.0.4 << pipeline.parameters.workingdir >>/
+            VERSION=$(git describe --abbrev=0)
+            ghr -t ${GITHUB_TOKEN} -u ${CIRCLE_PROJECT_USERNAME} -r ${CIRCLE_PROJECT_REPONAME} -c ${CIRCLE_SHA1} -delete ${VERSION} << pipeline.parameters.workingdir >>/
 
 
   checkout-build:
@@ -352,16 +353,16 @@ workflows:
               # Only master branch gets deployed
               only: /^(<< pipeline.parameters.main-repo-branch >>)$/
 
-#      - publish-release-with-docker:
-#          requires:
-#            - release-with-docker
-#          filters:
-#            tags:
-#              # Only when a git tag is pushed
-#              only: << pipeline.parameters.release-tag-regex >>
-#            branches:
-#              # Only master branch gets deployed
-#              only: /^(<< pipeline.parameters.main-repo-branch >>)$/
+      - publish-release-with-docker:
+          requires:
+            - release-with-docker
+          filters:
+            tags:
+              # Only when a git tag is pushed
+              only: << pipeline.parameters.release-tag-regex >>
+            branches:
+              # Only master branch gets deployed
+              only: /^(<< pipeline.parameters.main-repo-branch >>)$/
 
   # This job is responsible for building, testing, deploying of the application on Linux machine.
   # It also creates the application Docker image and publishes it in the Docker Hub repository.
