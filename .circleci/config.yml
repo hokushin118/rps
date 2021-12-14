@@ -319,9 +319,6 @@ workflows:
             tags:
               # Ignore when a git tag is pushed
               ignore: << pipeline.parameters.release-tag-regex >>
-            branches:
-              # Ignore all branches to avoid running on each commit
-              ignore: << pipeline.parameters.all-branches-regex >>
 
       - unit-test-with-docker:
           requires:
@@ -332,9 +329,6 @@ workflows:
             tags:
               # Ignore when a git tag is pushed
               ignore: << pipeline.parameters.release-tag-regex >>
-            branches:
-              # Ignore all branches to avoid running on each commit
-              ignore: << pipeline.parameters.all-branches-regex >>
 
   # This job is responsible for:
   # 1. building, testing and deploying of the application on Docker container
