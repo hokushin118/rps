@@ -392,13 +392,3 @@ workflows:
               # Ignore nexus-repo branch
               ignore: << pipeline.parameters.nexus-repo-branch >>, << pipeline.parameters.release-repo-branch >>
 
-#      - release-with-linux-machine:
-#          requires:
-#            - unit-test-with-linux-machine
-#          filters:
-#            tags:
-#              # Only when a git tag is pushed
-#              only: << pipeline.parameters.release-tag-regex >>
-#            branches:
-#              # Only master branch gets deployed
-#              only: /^(<< pipeline.parameters.main-repo-branch >>)$/
