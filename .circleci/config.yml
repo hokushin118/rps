@@ -283,15 +283,15 @@ jobs:
     executor: docker-executor
     working_directory: << pipeline.parameters.workingdir >>
     steps:
+      - checkout-build
+      - unit-test
+      - sonar-scan
       - checkout-build-release
 
   publish-release-with-docker:
     executor: docker-ghr-executor
     working_directory: << pipeline.parameters.workingdir >>
     steps:
-      - checkout-build
-      - unit-test
-      - sonar-scan
       - publish-github-release
 
   build-with-linux-machine:
@@ -329,7 +329,9 @@ workflows:
               ignore: << pipeline.parameters.release-tag-regex >>
             branches:
               # Ignore nexus-repo branch
-              ignore: << pipeline.parameters.nexus-repo-branch >>, << pipeline.parameters.release-repo-branch >>
+              ignore: |
+                << pipeline.parameters.nexus-repo-branch >>
+                << pipeline.parameters.release-repo-branch >>
 
       - unit-test-with-docker:
           requires:
@@ -342,7 +344,9 @@ workflows:
               ignore: << pipeline.parameters.release-tag-regex >>
             branches:
               # Ignore nexus-repo branch
-              ignore: << pipeline.parameters.nexus-repo-branch >>, << pipeline.parameters.release-repo-branch >>
+              ignore: |
+                << pipeline.parameters.nexus-repo-branch >>
+                << pipeline.parameters.release-repo-branch >>
 
       - release-with-docker:
           filters:
@@ -375,7 +379,9 @@ workflows:
               ignore: << pipeline.parameters.release-tag-regex >>
             branches:
               # Ignore nexus-repo branch
-              ignore: << pipeline.parameters.nexus-repo-branch >>, << pipeline.parameters.release-repo-branch >>
+              ignore: |
+                << pipeline.parameters.nexus-repo-branch >>
+                << pipeline.parameters.release-repo-branch >>
 
       - unit-test-with-linux-machine:
           requires:
@@ -388,4 +394,6 @@ workflows:
               ignore: << pipeline.parameters.release-tag-regex >>
             branches:
               # Ignore nexus-repo branch
-              ignore: << pipeline.parameters.nexus-repo-branch >>, << pipeline.parameters.release-repo-branch >>
+              ignore: |
+                << pipeline.parameters.nexus-repo-branch >>
+                << pipeline.parameters.release-repo-branch >>
