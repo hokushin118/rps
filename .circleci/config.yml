@@ -204,7 +204,7 @@ commands:
           name: Preparing Release to GitHub
           command: |
             sudo chmod +x ./mvnw
-            ./mvnw --batch-mode release:prepare -s ~/.m2/settings.xml
+            ./mvnw --batch-mode release:clean release:prepare -s ~/.m2/settings.xml
       - run:
           name: Performing Release for GitHub
           command: ./mvnw --batch-mode release:perform -s ~/.m2/settings.xml
