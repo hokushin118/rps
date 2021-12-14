@@ -348,7 +348,7 @@ workflows:
 
       - publish-release-with-docker:
           requires:
-            - release-with-docker
+            - build-release-with-docker
           filters:
             tags:
               # Only when a git tag is pushed
