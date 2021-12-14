@@ -346,7 +346,7 @@ workflows:
               only: << pipeline.parameters.release-tag-regex >>
             branches:
               # Only master branch gets deployed
-              only: /^(<< pipeline.parameters.main-repo-branch >>)$/
+              ignore: /.*/
 
       - publish-release-with-docker:
           requires:
@@ -357,7 +357,7 @@ workflows:
               only: << pipeline.parameters.release-tag-regex >>
             branches:
               # Only master branch gets deployed
-              only: /^(<< pipeline.parameters.main-repo-branch >>)$/
+              ignore: /.*/
 
   # This job is responsible for building, testing, deploying of the application on Linux machine.
   # It also creates the application Docker image and publishes it in the Docker Hub repository.
@@ -367,7 +367,7 @@ workflows:
           filters:
             tags:
               # Only when a git tag is pushed
-              only:  /.*/
+              only: /.*/
             branches:
               # Ignore nexus-repo branch
               ignore: << pipeline.parameters.nexus-repo-branch >>
@@ -380,7 +380,7 @@ workflows:
           filters:
             tags:
               # Only when a git tag is pushed
-              only:  /.*/
+              only: /.*/
             branches:
               # Ignore nexus-repo branch
               ignore: << pipeline.parameters.nexus-repo-branch >>

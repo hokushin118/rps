@@ -14,6 +14,7 @@
 * Mockito 3.9.0
 * CircleCI 2.0 for CI/CD
 * SonarCloud for SAST
+* JaCoCo and Codacy for test coverage
 ### Running the RPS Game From the Command Line
 * Clone this repository:
 ```
