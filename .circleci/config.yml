@@ -174,7 +174,7 @@ commands:
       # Reuse the workspace from the previous job
       - attach_workspace:
           at: << pipeline.parameters.workingdir >>
-      - move_settings_cmd
+   #   - move_settings_cmd
       - add_ssh_keys:
           fingerprints:
             - "SO:ME:FIN:G:ER:PR:IN:T"
