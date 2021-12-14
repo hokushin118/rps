@@ -201,13 +201,10 @@ commands:
             git reset --hard origin/master
             git push origin << pipeline.parameters.release-repo-branch >> --force
       - run:
-          name: Delete the release descriptor and any backup POM files
+          name: Preparing Release to GitHub
           command: |
             sudo chmod +x ./mvnw
-            ./mvnw -B release:clean
-      - run:
-          name: Preparing Release to GitHub
-          command: ./mvnw -B release:prepare -s ~/.m2/settings.xml
+            ./mvnw -B release:prepare -s ~/.m2/settings.xml
       - run:
           name: Performing Release for GitHub
           command: ./mvnw -B release:perform -s ~/.m2/settings.xml
@@ -293,6 +290,8 @@ jobs:
     working_directory: << pipeline.parameters.workingdir >>
     steps:
       - checkout-build
+      - unit-test
+      - sonar-scan
       - publish-github-release
 
   build-with-linux-machine:
