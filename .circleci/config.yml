@@ -272,7 +272,7 @@ jobs:
       - unit-test
       - sonar-scan
 
-  release-with-docker:
+  build--release-with-docker:
     executor: docker-executor
     working_directory: << pipeline.parameters.workingdir >>
     steps:
@@ -337,7 +337,7 @@ workflows:
               # Ignore nexus-repo branch
               ignore: << pipeline.parameters.nexus-repo-branch >>
 
-      - release-with-docker:
+      - build-release-with-docker:
           filters:
             tags:
               # Only when a git tag is pushed
