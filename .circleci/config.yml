@@ -35,10 +35,6 @@ parameters:
     description: "Name of the master branch of the application."
     type: string
     default: "master"
-  release-repo-branch:
-    description: "Name of the branch used for project releases."
-    type: string
-    default: "release"
   nexus-repo-branch:
     description: "Name of the branch used for storing artifacts."
     type: string
@@ -194,13 +190,6 @@ commands:
           name: Setup of user.email for Git
           command: git config user.email ${GITHUB_EMAIL_ADDRESS}
       - run:
-          name: Clone GitHub repository
-          command: |
-            git clone ${CIRCLE_REPOSITORY_URL}
-            git checkout << pipeline.parameters.release-repo-branch >>
-            git reset --hard origin/master
-            git push origin << pipeline.parameters.release-repo-branch >> --force
-      - run:
           name: Preparing Release to GitHub
           command: |
             sudo chmod +x ./mvnw
@@ -329,9 +318,7 @@ workflows:
               ignore: << pipeline.parameters.release-tag-regex >>
             branches:
               # Ignore nexus-repo branch
-              ignore: |
-                << pipeline.parameters.nexus-repo-branch >>
-                << pipeline.parameters.release-repo-branch >>
+              ignore: << pipeline.parameters.nexus-repo-branch >>
 
       - unit-test-with-docker:
           requires:
@@ -344,9 +331,7 @@ workflows:
               ignore: << pipeline.parameters.release-tag-regex >>
             branches:
               # Ignore nexus-repo branch
-              ignore: |
-                << pipeline.parameters.nexus-repo-branch >>
-                << pipeline.parameters.release-repo-branch >>
+              ignore: << pipeline.parameters.nexus-repo-branch >>
 
       - release-with-docker:
           filters:
@@ -381,9 +366,7 @@ workflows:
                 ${CIRCLE_TAG}
             branches:
               # Ignore nexus-repo branch
-              ignore: |
-                << pipeline.parameters.nexus-repo-branch >>
-                << pipeline.parameters.release-repo-branch >>
+              ignore: << pipeline.parameters.nexus-repo-branch >>
 
       - unit-test-with-linux-machine:
           requires:
@@ -393,11 +376,7 @@ workflows:
           filters:
             tags:
               # Only when a git tag is pushed
-              ignore: |
-                << pipeline.parameters.release-tag-regex >>
-                ${CIRCLE_TAG}
+              ignore: -n ${CIRCLE_TAG}
             branches:
               # Ignore nexus-repo branch
-              ignore: |
-                << pipeline.parameters.nexus-repo-branch >>
-                << pipeline.parameters.release-repo-branch >>
+              ignore: << pipeline.parameters.nexus-repo-branch >>
