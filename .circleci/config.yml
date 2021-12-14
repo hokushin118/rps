@@ -174,7 +174,7 @@ commands:
       # Reuse the workspace from the previous job
       - attach_workspace:
           at: << pipeline.parameters.workingdir >>
-   #   - move_settings_cmd
+      - move_settings_cmd
       - add_ssh_keys:
           fingerprints:
             - "SO:ME:FIN:G:ER:PR:IN:T"
@@ -227,6 +227,7 @@ commands:
       - run:
           name: Deploying Release on GitHub
           command: |
+            echo "We set the git tag/release version via a $VERSION environment variable."
             VERSION=$(git describe --abbrev=0)
             ghr -t ${GITHUB_TOKEN} -u ${CIRCLE_PROJECT_USERNAME} -r ${CIRCLE_PROJECT_REPONAME} -c ${CIRCLE_SHA1} -delete ${VERSION} << pipeline.parameters.workingdir >>/
 
