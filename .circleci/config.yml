@@ -48,8 +48,7 @@ parameters:
       Regex that matches the SemVer (Semantic Versioning) rules.
       https://rgxdb.com/r/40OZ1HN5
     type: string
-    default: |
-      /(?:0|[1-9]\d*)\.(?:0|[1-9]\d*)\.(?:0|[1-9]\d*)/
+    default: /^\d+\.\d+\.\d+$/
 
 # Several steps in this config use the same, specialized steps.
 # Commands can be used to extract a common set of steps into a reusable-block.
