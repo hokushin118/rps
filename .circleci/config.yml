@@ -372,9 +372,6 @@ workflows:
             tags:
               # Ignore when a git tag is pushed
               ignore: << pipeline.parameters.release-tag-regex >>
-            branches:
-              # Ignore all branches to avoid running on each commit
-              ignore: << pipeline.parameters.all-branches-regex >>
 
       - unit-test-with-linux-machine:
           requires:
@@ -385,6 +382,3 @@ workflows:
             tags:
               # Ignore when a git tag is pushed
               ignore: << pipeline.parameters.release-tag-regex >>
-            branches:
-              # Ignore all branches to avoid running on each commit
-              ignore: << pipeline.parameters.all-branches-regex >>
