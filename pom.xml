@@ -549,6 +549,7 @@
                     <!-- Tasks to be run before creating tag -->
                     <preparationGoals>clean verify</preparationGoals>
                     <releaseProfiles>github</releaseProfiles>
+                    <scmCommentPrefix>[skip ci]</scmCommentPrefix>
                     <checkModificationExcludes>
                         <checkModificationExclude>mvnw</checkModificationExclude>
                     </checkModificationExcludes>
