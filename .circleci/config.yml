@@ -344,7 +344,7 @@ workflows:
   build-test-release-with-docker:
     when: << pipeline.parameters.is_release >>
     jobs:
-      - build-with-docker:
+      - build-with-docker
 #          filters:
 #            tags:
 #              # Only when a git tag is pushed
