@@ -49,6 +49,10 @@ parameters:
       https://rgxdb.com/r/40OZ1HN5
     type: string
     default: /^\d+\.\d+\.\d+$/
+  is_release:
+    description: "Shows whether the job request is release."
+    type: boolean
+    default: false
 
 # Several steps in this config use the same, specialized steps.
 # Commands can be used to extract a common set of steps into a reusable-block.
@@ -324,90 +328,75 @@ jobs:
 workflows:
   # This job is responsible for building and testing of the application on Docker container.
   build-test-with-docker:
+    unless: << pipeline.parameters.is_release >>
     jobs:
-      - build-with-docker:
-          filters:
-            tags:
-              # Ignore when a git tag is pushed
-              ignore: << pipeline.parameters.release-tag-regex >>
-
+      - build-with-docker
       - unit-test-with-docker:
           requires:
             - build-with-docker
           # execute the job in SonarCloud security context
           context: SonarCloud
-          filters:
-            tags:
-              # Ignore when a git tag is pushed
-              ignore: << pipeline.parameters.release-tag-regex >>
 
   # This job is responsible for:
   # 1. building, testing and deploying of the application on Docker container
   # 2. creating application releases and publishing them to the GitHub repository
   # 3. creating application Docker images and publishing them in the Docker Hub repository
   build-test-release-with-docker:
+    when: << pipeline.parameters.is_release >>
     jobs:
       - build-with-docker:
-          filters:
-            tags:
-              # Only when a git tag is pushed
-              only: << pipeline.parameters.release-tag-regex >>
-            branches:
-              # Ignore all branches to avoid running on each commit
-              ignore: << pipeline.parameters.all-branches-regex >>
+#          filters:
+#            tags:
+#              # Only when a git tag is pushed
+#              only: << pipeline.parameters.release-tag-regex >>
+#            branches:
+#              # Ignore all branches to avoid running on each commit
+#              ignore: << pipeline.parameters.all-branches-regex >>
 
       - unit-test-with-docker:
           requires:
             - build-with-docker
           # execute the job in SonarCloud security context
           context: SonarCloud
-          filters:
-            tags:
-              # Only when a git tag is pushed
-              only: << pipeline.parameters.release-tag-regex >>
-            branches:
-              # Ignore all branches to avoid running on each commit
-              ignore: << pipeline.parameters.all-branches-regex >>
+#          filters:
+#            tags:
+#              # Only when a git tag is pushed
+#              only: << pipeline.parameters.release-tag-regex >>
+#            branches:
+#              # Ignore all branches to avoid running on each commit
+#              ignore: << pipeline.parameters.all-branches-regex >>
 
       - release-with-docker:
           requires:
             - unit-test-with-docker
-          filters:
-            tags:
-              # Only when a git tag is pushed
-              only: << pipeline.parameters.release-tag-regex >>
-            branches:
-              # Ignore all branches to avoid running on each commit
-              ignore: << pipeline.parameters.all-branches-regex >>
+#          filters:
+#            tags:
+#              # Only when a git tag is pushed
+#              only: << pipeline.parameters.release-tag-regex >>
+#            branches:
+#              # Ignore all branches to avoid running on each commit
+#              ignore: << pipeline.parameters.all-branches-regex >>
 
       - publish-release-with-docker:
           requires:
             - release-with-docker
-          filters:
-            tags:
-              # Only when a git tag is pushed
-              only: << pipeline.parameters.release-tag-regex >>
-            branches:
-              # Ignore all branches to avoid running on each commit
-              ignore: << pipeline.parameters.all-branches-regex >>
+#          filters:
+#            tags:
+#              # Only when a git tag is pushed
+#              only: << pipeline.parameters.release-tag-regex >>
+#            branches:
+#              # Ignore all branches to avoid running on each commit
+#              ignore: << pipeline.parameters.all-branches-regex >>
 
   # This job is responsible for:
   # 1. building, testing and deploying of the application on Linux machine
   # 2. creating application Docker images and publishing them in the Docker Hub repository
   build-test-with-linux-machine:
+    unless: << pipeline.parameters.is_release >>
     jobs:
-      - build-with-linux-machine:
-          filters:
-            tags:
-              # Ignore when a git tag is pushed
-              ignore: << pipeline.parameters.release-tag-regex >>
-
+      - build-with-linux-machine
       - unit-test-with-linux-machine:
           requires:
             - build-with-linux-machine
           # execute the job in SonarCloud security context
           context: SonarCloud
-          filters:
-            tags:
-              # Ignore when a git tag is pushed
-              ignore: << pipeline.parameters.release-tag-regex >>

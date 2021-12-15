@@ -1,0 +1,23 @@
+name: Create New Release
+
+on:
+  workflow_dispatch:
+    inputs:
+      newRelease:
+        required: true
+        description: "Create New Release"
+
+jobs:
+  check:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Trigger CircleCI Release Job
+        env:
+          CIRCLE_BRANCH: ${{ github.head_ref }}
+        run: |
+          curl -X POST \
+          -H 'Circle-Token: ${{secrets.CIRCLE_TOKEN}}' \
+          -H 'Content-Type: application/json' \
+          -H 'Accept: application/json' \
+          -d "{\"branch\":\"${CIRCLE_BRANCH}\",\"parameters\":{\"is_release\":true}}" \
+          https://circleci.com/api/v2/project/gh/hokushin118/rps/pipeline
