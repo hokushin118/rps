@@ -18,9 +18,9 @@
     </licenses>
 
     <scm>
-        <url>https://github.com/hokushin118/rps</url>
-        <connection>scm:git:git://github.com/hokushin118/rps.git</connection>
-        <developerConnection>scm:git:git@github.com:hokushin118/rps.git</developerConnection>
+        <url>https://github.com/hokushin118/${github.repo.name}</url>
+        <connection>scm:git:git://github.com/hokushin118/${github.repo.name}.git</connection>
+        <developerConnection>scm:git:git@github.com:hokushin118/${github.repo.name}.git</developerConnection>
         <tag>HEAD</tag>
     </scm>
 
