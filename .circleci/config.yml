@@ -164,7 +164,7 @@ commands:
           paths:
             - .
 
-  checkout-build-release:
+  create-release:
     description: |
       Creates the application Docker image and publishes it to the Docker Hub repository.
       Deploys generated artifact to the GitHub Packages repository.
@@ -195,10 +195,24 @@ commands:
             ./mvnw -B release:clean
       - run:
           name: Preparing Release to GitHub
-          command: ./mvnw -B release:prepare -s ~/.m2/settings.xml
+          command: |
+            echo "1. Check that there are no uncommitted changes in the sources."
+            echo "2. Check that there are no SNAPSHOT dependencies."
+            echo "3. Change the version of the project in the pom file to a full release number (remove SNAPSHOT suffix)."
+            echo "4. Transform the SCM information in the POM to include the final destination of the tag."
+            echo "5. Run the project tests against the modified POMs to confirm everything is in working order."
+            echo "6. Commit the modified POMs."
+            echo "7. Create the tag out of this non-SNAPSHOT versioned code."
+            echo "8. Bump the version in the POMs to a new value y-SNAPSHOT."
+            echo "9. Commit the modified POMs."
+            ./mvnw -B release:prepare -s ~/.m2/settings.xml
       - run:
           name: Performing Release for GitHub
-          command: ./mvnw -B release:perform -s ~/.m2/settings.xml
+          command: |
+            echo "1. Checkout release tag from SCM."
+            echo "2. Run the predefined Maven goals to release the project (deploy)."
+            echo "3. Removes the release.properties and other release files from the checkout after completing release."
+            ./mvnw -B release:perform -s ~/.m2/settings.xml
       - run:
           name: Showing latest tag
           command: git describe --abbrev=0
@@ -272,14 +286,11 @@ jobs:
       - unit-test
       - sonar-scan
 
-  build-release-with-docker:
+  release-with-docker:
     executor: docker-executor
     working_directory: << pipeline.parameters.workingdir >>
     steps:
-      - checkout-build
-      - unit-test
-      - sonar-scan
-      - checkout-build-release
+      - create-release
 
   publish-release-with-docker:
     executor: docker-ghr-executor
@@ -306,7 +317,7 @@ jobs:
     executor: linux-machine-executor
     working_directory: << pipeline.parameters.workingdir >>
     steps:
-      - checkout-build-release
+      - create-release
 
 # Invoke jobs via workflows
 # See: https://circleci.com/docs/2.0/configuration-reference/#workflows
@@ -336,7 +347,31 @@ workflows:
   # 3. creating application Docker images and publishing them in the Docker Hub repository
   build-test-release-with-docker:
     jobs:
-      - build-release-with-docker:
+      - build-with-docker:
+          filters:
+            tags:
+              # Only when a git tag is pushed
+              only: << pipeline.parameters.release-tag-regex >>
+            branches:
+              # Ignore all branches to avoid running on each commit
+              ignore: << pipeline.parameters.all-branches-regex >>
+
+      - unit-test-with-docker:
+          requires:
+            - build-with-docker
+          # execute the job in SonarCloud security context
+          context: SonarCloud
+          filters:
+            tags:
+              # Only when a git tag is pushed
+              only: << pipeline.parameters.release-tag-regex >>
+            branches:
+              # Ignore all branches to avoid running on each commit
+              ignore: << pipeline.parameters.all-branches-regex >>
+
+      - release-with-docker:
+          requires:
+            - unit-test-with-docker
           filters:
             tags:
               # Only when a git tag is pushed
@@ -347,7 +382,7 @@ workflows:
 
       - publish-release-with-docker:
           requires:
-            - build-release-with-docker
+            - release-with-docker
           filters:
             tags:
               # Only when a git tag is pushed
