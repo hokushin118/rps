@@ -190,7 +190,7 @@
             https://docs.github.com/en/packages/learn-github-packages/introduction-to-github-packages
             -->
             <distributionManagement>
-                <!-- Repository for holding project releases -->
+                <!-- Repository for holding project releases (GitHub internal) -->
                 <repository>
                     <id>github</id>
                     <name>GitHub Packages</name>
