@@ -39,6 +39,12 @@
             <password>{0/fnU7SXyuQHQFJ331nKfL6UTsTyUnZc5wpWhVenkyW7755DGVmEtHthcglaOiHZQXM90W6XyY9OaZHD6s7Fzw==}
             </password>
         </server>
+
+        <server>
+            <id>packagecloud.snapshots</id>
+            <!-- PackageCloud Token -->
+            <password>{vH9IQQ+bRKYHaXz0ANvAbF7DPRi/HjiKUgnWIz0N3ex+uXF4LzfU2QA/v60vsyC+U8Q5a0S/JOE/d6Cm8hxGgxdXmS0TvWstWPz+8NQ5g+8=}</password>
+        </server>
     </servers>
 
     <profiles>
