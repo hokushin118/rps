@@ -2,9 +2,7 @@ name: Create New Release
 
 on:
   # Trigger the workflow manually,
-  workflow_dispatch:
-    branches:
-      master
+  workflow_dispatch
 
 jobs:
   check:
