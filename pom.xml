@@ -190,11 +190,18 @@
             https://docs.github.com/en/packages/learn-github-packages/introduction-to-github-packages
             -->
             <distributionManagement>
+                <!-- Repository for holding project releases -->
                 <repository>
                     <id>github</id>
                     <name>GitHub Packages</name>
                     <url>https://maven.pkg.github.com/${github.repo.username}/${github.repo.name}</url>
                 </repository>
+                <!-- Repository for holding project snapshots -->
+                <snapshotRepository>
+                    <id>packagecloud.snapshots</id>
+                    <name>Packagecloud Packages</name>
+                    <url>packagecloud+https://packagecloud.io/hokushin/snapshot</url>
+                </snapshotRepository>
             </distributionManagement>
         </profile>
     </profiles>
