@@ -319,6 +319,12 @@ jobs:
     steps:
       - create-release
 
+  publish-release-with-linux-machine:
+    executor: linux-machine-executor
+    working_directory: << pipeline.parameters.workingdir >>
+    steps:
+      - publish-github-release
+
 # Invoke jobs via workflows
 # See: https://circleci.com/docs/2.0/configuration-reference/#workflows
 workflows:
@@ -375,3 +381,26 @@ workflows:
             - build-with-linux-machine
           # execute the job in SonarCloud security context
           context: SonarCloud
+
+  # This job is responsible for:
+  # 1. building, testing and deploying of the application on Linux machine
+  # 2. creating application releases and publishing them to the GitHub repository
+  # 3. creating application Docker images and publishing them in the Docker Hub repository
+  build-test-release-with-linux-machine:
+    when:
+      and:
+        - equal: [ true, << pipeline.parameters.is_release >> ]
+        - equal: [ "linux", << pipeline.parameters.environment >> ]
+    jobs:
+      - build-with-linux-machine
+      - unit-test-with-linux-machine:
+          requires:
+            - build-with-linux-machine
+          # execute the job in SonarCloud security context
+          context: SonarCloud
+      - release-with-linux-machine:
+          requires:
+            - unit-test-with-linux-machine
+      - publish-release-with-linux-machine:
+          requires:
+            - release-with-linux-machine

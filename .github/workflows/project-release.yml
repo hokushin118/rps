@@ -26,6 +26,7 @@ jobs:
           CIRCLE_BRANCH: ${{ github.head_ref }}
         run: |
           # CircleCI REST API v2 https://circleci.com/docs/api/v2/#operation/triggerPipeline
+          # secrets.CIRCLE_TOKEN is CircleCI Personal API Token https://app.circleci.com/settings/user/tokens
           curl --location --request POST 'https://circleci.com/api/v2/project/gh/hokushin118/rps/pipeline' \
           --header 'Circle-Token: ${{ secrets.CIRCLE_TOKEN }}' \
           --header 'Content-Type: application/json' \
