@@ -303,7 +303,6 @@ jobs:
     working_directory: << pipeline.parameters.workingdir >>
     steps:
       - install_jdk_cmd
-      - install_github_cli_cmd
       - checkout-build
 
   unit-test-with-linux-machine:
@@ -323,6 +322,7 @@ jobs:
     executor: linux-machine-executor
     working_directory: << pipeline.parameters.workingdir >>
     steps:
+      - install_github_cli_cmd
       - publish-github-release
 
 # Invoke jobs via workflows
