@@ -28,9 +28,15 @@ executors:
       # recommended linux image - includes Ubuntu 20.04, docker 19.03.13, docker-compose 1.27.4
       image: ubuntu-2004:202010-01
 
+environment:
+
 # Pipeline Parameters
 ## These parameters are used internally.
 parameters:
+  environment:
+    description: "Execution environment."
+    type: string
+    default: "docker"
   main-repo-branch:
     description: "Name of the master branch of the application."
     type: string
@@ -318,7 +324,11 @@ jobs:
 workflows:
   # This job is responsible for building and testing of the application on Docker container.
   build-test-with-docker:
-    unless: << pipeline.parameters.is_release >>
+    # Running condition https://circleci.com/docs/2.0/configuration-reference/#using-when-in-workflows
+    when:
+      and:
+        - equal: [ false, << pipeline.parameters.is_release >> ]
+        - equal: [ "docker", << pipeline.parameters.environment >> ]
     jobs:
       - build-with-docker
       - unit-test-with-docker:
@@ -332,7 +342,10 @@ workflows:
   # 2. creating application releases and publishing them to the GitHub repository
   # 3. creating application Docker images and publishing them in the Docker Hub repository
   build-test-release-with-docker:
-    when: << pipeline.parameters.is_release >>
+    when:
+      and:
+        - equal: [ true, << pipeline.parameters.is_release >> ]
+        - equal: [ "docker", << pipeline.parameters.environment >> ]
     jobs:
       - build-with-docker
       - unit-test-with-docker:
@@ -351,7 +364,10 @@ workflows:
   # 1. building, testing and deploying of the application on Linux machine
   # 2. creating application Docker images and publishing them in the Docker Hub repository
   build-test-with-linux-machine:
-    unless: << pipeline.parameters.is_release >>
+    when:
+      and:
+        - equal: [ false, << pipeline.parameters.is_release >> ]
+        - equal: [ "linux", << pipeline.parameters.environment >> ]
     jobs:
       - build-with-linux-machine
       - unit-test-with-linux-machine:
