@@ -3,6 +3,7 @@
 [![codecov](https://codecov.io/gh/hokushin118/rps/branch/master/graph/badge.svg?token=8FSYV51XAF)](https://codecov.io/gh/hokushin118/rps)
 [![Quality Gate Status](https://sonarcloud.io/api/project_badges/measure?project=hokushin118_rps&metric=alert_status)](https://sonarcloud.io/summary/new_code?id=hokushin118_rps)
 [![Codacy Badge](https://api.codacy.com/project/badge/Grade/ae18bc7d448c4b9ab13811b1b08f6c13)](https://app.codacy.com/gh/hokushin118/rps?utm_source=github.com&utm_medium=referral&utm_content=hokushin118/rps&utm_campaign=Badge_Grade_Settings)
+[![CodeFactor](https://www.codefactor.io/repository/github/hokushin118/rps/badge)](https://www.codefactor.io/repository/github/hokushin118/rps)
 [![License: GPL v3](https://img.shields.io/badge/License-GPLv3-blue.svg)](https://www.gnu.org/licenses/gpl-3.0)
 ### Prerequisites
 * Java 11 or higher
@@ -15,6 +16,7 @@
 * CircleCI 2.0 for CI/CD
 * SonarCloud for SAST
 * JaCoCo and Codacy for test coverage
+* GitHub Actions for triggering some Circle CI jobs on different platforms
 ### Running the RPS Game From the Command Line
 * Clone this repository:
 ```
