@@ -1,5 +1,5 @@
-# GitHub Action to trigger CircleCI Build-Test-Release job on different execution environments.
-name: Create New Release
+# GitHub Action to trigger CircleCI Build-Test job on different execution environments.
+name: Build and Test
 
 # An event that triggers a workflow run
 on:
@@ -14,13 +14,13 @@ on:
           - docker
           - linux
 
-# A set of steps in the workflow that triggers application build-test-release on CircleCL with defined parameters.
+# A set of steps in the workflow that triggers application build-test on CircleCL with defined parameters.
 jobs:
   check:
     runs-on: ubuntu-latest
     steps:
       - name: Greetings
-        run: echo "Build, test and release will be executed on the ${{ github.event.inputs.environment }} platform."
+        run: echo "Build and test will be executed on the ${{ github.event.inputs.environment }} platform."
       - name: Trigger CircleCI Release Job
         env:
           CIRCLE_BRANCH: ${{ github.head_ref }}
@@ -30,4 +30,4 @@ jobs:
           --header 'Circle-Token: ${{ secrets.CIRCLE_TOKEN }}' \
           --header 'Content-Type: application/json' \
           --header 'Accept: application/json' \
-          --data-raw '{"branch":"master","parameters":{"is_release":true, "environment": "${{ github.event.inputs.environment }}"}}'
+          --data-raw '{"branch":"master","parameters":{"environment": "${{ github.event.inputs.environment }}"}}'
