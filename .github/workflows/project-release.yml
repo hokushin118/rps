@@ -1,19 +1,33 @@
+# GitHub Action to trigger CircleCI Release job.
 name: Create New Release
 
+# An event that triggers a workflow run
 on:
   # Trigger the workflow manually,
-  workflow_dispatch
+  workflow_dispatch:
+    inputs:
+      environment:
+        type: choice
+        description: Select the environment
+        required: true
+        options:
+          - docker
+          - linux
 
+# A set of steps in the workflow that triggers application release on CircleCL with defined parameters.
 jobs:
   check:
     runs-on: ubuntu-latest
     steps:
+      - name: Greetings
+        run: echo "Release will be executed on the ${{ github.event.inputs.environment }} platform."
       - name: Trigger CircleCI Release Job
         env:
           CIRCLE_BRANCH: ${{ github.head_ref }}
         run: |
+          # CircleCI REST API v2 https://circleci.com/docs/api/v2/#operation/triggerPipeline
           curl --location --request POST 'https://circleci.com/api/v2/project/gh/hokushin118/rps/pipeline' \
           --header 'Circle-Token: ${{ secrets.CIRCLE_TOKEN }}' \
           --header 'Content-Type: application/json' \
           --header 'Accept: application/json' \
-          --data-raw '{"branch":"master","parameters":{"is_release":true}}'
+          --data-raw '{"branch":"master","parameters":{"is_release":true, "environment": ${{ github.event.inputs.environment }}}}'
