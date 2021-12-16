@@ -21,7 +21,7 @@ jobs:
     steps:
       - name: Greetings
         run: echo "Build and test will be executed on the ${{ github.event.inputs.environment }} platform."
-      - name: Trigger CircleCI Release Job
+      - name: Trigger CircleCI Build and Test Job
         env:
           CIRCLE_BRANCH: ${{ github.head_ref }}
         run: |
