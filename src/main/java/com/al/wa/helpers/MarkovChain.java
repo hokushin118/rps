@@ -4,7 +4,9 @@ import com.al.wa.enums.Hand;
 
 import java.util.stream.IntStream;
 
-import static com.al.wa.enums.Hand.*;
+import static com.al.wa.enums.Hand.PAPER;
+import static com.al.wa.enums.Hand.ROCK;
+import static com.al.wa.enums.Hand.SCISSORS;
 
 /**
  * This class contains Markov Chain Algorithm functionality.
