@@ -15,14 +15,15 @@
 * Mockito 3.9.0
 * CircleCI 2.0 for CI/CD
 * SonarCloud for SAST
-* JaCoCo and Codacy for test coverage
+* JaCoCo test coverage
 * GitHub Actions for triggering some Circle CI jobs on different platforms
+* Codacy and Codefactor for code quality
 ### Running the RPS Game From the Command Line
 * Clone this repository:
 ```
     $ git clone https://github.com/hokushin118/rps.git
 ```
-* Navigate to the rooy directory of the application on your computer.
+* Navigate to the root directory of the application on your computer.
 * Run "mvn package" in the root directory to create the Rock Paper Scissors game console app.
 ```
      > mvn package
