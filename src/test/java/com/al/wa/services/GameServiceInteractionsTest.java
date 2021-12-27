@@ -15,7 +15,6 @@ import static org.junit.jupiter.api.Assertions.assertNotNull;
 import static org.mockito.Mockito.any;
 import static org.mockito.Mockito.doNothing;
 import static org.mockito.Mockito.reset;
-import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.verifyNoMoreInteractions;
 import static org.mockito.Mockito.when;
@@ -36,7 +35,7 @@ class GameServiceInteractionsTest {
         assertNotNull(welcomeMessage);
         assertEquals(GameServiceImpl.WELCOME_MESSAGE, welcomeMessage);
 
-        verify(this.gameService, times(1)).welcomeMessage();
+        verify(this.gameService).welcomeMessage();
         verifyNoMoreInteractions(this.gameService);
         reset(this.gameService);
     }
@@ -51,7 +50,7 @@ class GameServiceInteractionsTest {
         assertNotNull(enterOptionsMessage);
         assertEquals(GameServiceImpl.HAND_FIGURE, enterOptionsMessage);
 
-        verify(this.gameService, times(1)).enterOptionsMessage();
+        verify(this.gameService).enterOptionsMessage();
         verifyNoMoreInteractions(this.gameService);
         reset(this.gameService);
     }
@@ -63,7 +62,7 @@ class GameServiceInteractionsTest {
 
         this.gameService.pickUserChoice(ROCK);
 
-        verify(this.gameService, times(1)).pickUserChoice(any(Hand.class));
+        verify(this.gameService).pickUserChoice(any(Hand.class));
         verifyNoMoreInteractions(this.gameService);
         reset(this.gameService);
     }
@@ -79,7 +78,7 @@ class GameServiceInteractionsTest {
         assertNotNull(receivedHand);
         assertEquals(hand, receivedHand);
 
-        verify(this.gameService, times(1)).pickMachineChoice();
+        verify(this.gameService).pickMachineChoice();
         verifyNoMoreInteractions(this.gameService);
         reset(this.gameService);
     }
@@ -95,7 +94,7 @@ class GameServiceInteractionsTest {
         assertNotNull(receivedPlayer);
         assertEquals(player, receivedPlayer);
 
-        verify(this.gameService, times(1)).calculateResult();
+        verify(this.gameService).calculateResult();
         verifyNoMoreInteractions(this.gameService);
         reset(this.gameService);
     }
@@ -111,7 +110,7 @@ class GameServiceInteractionsTest {
         assertNotNull(receivedScore);
         assertEquals(score, receivedScore);
 
-        verify(this.gameService, times(1)).getResults();
+        verify(this.gameService).getResults();
         verifyNoMoreInteractions(this.gameService);
         reset(this.gameService);
     }

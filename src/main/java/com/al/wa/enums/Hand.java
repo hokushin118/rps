@@ -9,7 +9,7 @@ import java.util.Map;
 import java.util.stream.Stream;
 
 /**
- * This enum contains Rock Paper Scissor game options.
+ * This enum contains Rock Paper Scissors game options.
  */
 @Getter
 @RequiredArgsConstructor(access = AccessLevel.PRIVATE)
