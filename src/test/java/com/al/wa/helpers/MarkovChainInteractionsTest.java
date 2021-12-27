@@ -10,7 +10,13 @@ import org.mockito.junit.jupiter.MockitoExtension;
 import static com.al.wa.enums.Hand.ROCK;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertNotNull;
-import static org.mockito.Mockito.*;
+import static org.mockito.Mockito.any;
+import static org.mockito.Mockito.anyFloat;
+import static org.mockito.Mockito.doNothing;
+import static org.mockito.Mockito.reset;
+import static org.mockito.Mockito.verify;
+import static org.mockito.Mockito.verifyNoMoreInteractions;
+import static org.mockito.Mockito.when;
 
 @ExtendWith(MockitoExtension.class)
 @DisplayName("Testing MarkovChain class")
@@ -29,7 +35,7 @@ class MarkovChainInteractionsTest {
         assertNotNull(receivedHand);
         assertEquals(hand, receivedHand);
 
-        verify(this.markovChain, times(1)).nextMove(anyFloat());
+        verify(this.markovChain).nextMove(anyFloat());
         verifyNoMoreInteractions(this.markovChain);
         reset(this.markovChain);
     }
@@ -41,7 +47,7 @@ class MarkovChainInteractionsTest {
 
         this.markovChain.updateChain(ROCK);
 
-        verify(this.markovChain, times(1)).updateChain(any(Hand.class));
+        verify(this.markovChain).updateChain(any(Hand.class));
         verifyNoMoreInteractions(this.markovChain);
         reset(this.markovChain);
     }

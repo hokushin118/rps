@@ -5,7 +5,9 @@ import org.junit.jupiter.api.Test;
 
 import java.util.Random;
 
-import static com.al.wa.enums.Hand.*;
+import static com.al.wa.enums.Hand.PAPER;
+import static com.al.wa.enums.Hand.ROCK;
+import static com.al.wa.enums.Hand.SCISSORS;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 
 @DisplayName("Testing MarkovChain class")
